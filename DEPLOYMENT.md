@@ -7,6 +7,7 @@ This project has been provisioned and deployed. Details below.
 | What | URL |
 | --- | --- |
 | Live app (production) | https://el-roi-help-desk.vercel.app |
+| GitHub repo | https://github.com/isaacnyamaa30-dev/El-Roi_Help_Desk |
 | Vercel project | https://vercel.com/tbc-daily/el-roi-help-desk |
 | Supabase project | https://supabase.com/dashboard/project/erpwrjeafkbluogdordf |
 
@@ -67,23 +68,24 @@ CLI:
 vercel deploy --prod
 ```
 
-### Recommended: connect GitHub for automatic redeploys
+### Automatic redeploys — ACTIVE
 
-For the "commit → push → auto-redeploy" workflow the spec describes, connect
-the repo to GitHub (this step needs your GitHub login, so it was left for
-you):
+The repo is connected to Vercel (production branch `main`). The
+"commit → push → auto-redeploy" workflow now works:
 
-1. Create an empty repo on GitHub, e.g. `el-roi-help-desk` (no README).
-2. Push this project:
-   ```bash
-   git remote add origin https://github.com/<you>/el-roi-help-desk.git
-   git push -u origin main
-   ```
-3. In the Vercel project → **Settings → Git**, connect the GitHub repo.
-4. From then on, every `git push` to `main` triggers a production deploy,
-   and pull requests get preview deployments automatically.
+```bash
+# edit code, test locally with `npm run dev`, then:
+git add -A
+git commit -m "Describe your change"
+git push
+```
 
-After connecting GitHub you can stop using `vercel deploy` by hand.
+Every push to `main` triggers a production deploy; pull requests get their
+own preview deployments. You no longer need `vercel deploy` by hand.
+
+Pushing from this machine uses Git Credential Manager (a browser prompt the
+first time). The `GITHUB_TOKEN` in `.env` was only used for the initial
+push and can be deleted.
 
 ---
 

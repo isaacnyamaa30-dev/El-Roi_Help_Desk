@@ -213,6 +213,9 @@ No production URL is hard-coded anywhere in the app — it always uses
 
 ---
 
+> This project is already deployed and wired to GitHub → Vercel.
+> See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for the live URLs and details.
+
 ## 10. Updating a Deployed App
 
 Example: change the user dashboard heading.
