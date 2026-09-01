@@ -1,0 +1,18 @@
+-- ============================================================================
+--  EL-ROI Help Desk Tracker — seed.sql
+--
+--  Seeding demo DATA that references profiles requires Supabase Auth users
+--  to exist first, and creating auth users needs the Admin API. For that
+--  reason the real seed workflow is the Node script:
+--
+--      npm run seed            (seeds only if tickets table is empty)
+--      npm run seed -- --reset (wipes tickets/messages/history, then reseeds)
+--
+--  See scripts/seed.ts and the "Database Seeding" section of the README.
+--
+--  This file is kept as the conventional Supabase seed location and can be
+--  used to add reference data that does NOT depend on auth.users — for
+--  example a categories lookup table if one is added in a future migration.
+-- ============================================================================
+
+-- (no auth-independent seed data yet)
