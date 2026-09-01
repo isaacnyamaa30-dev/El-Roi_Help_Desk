@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "EL-ROI Help Desk Tracker — support ticket management (React + Vite + Supabase)",
+  "author": "Isaac Nyamaa Boadi",
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

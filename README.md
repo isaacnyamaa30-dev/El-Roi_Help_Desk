@@ -2,6 +2,9 @@
 
 **Every Issue Seen. Every Request Tracked.**
 
+_Designed and developed by **Isaac Nyamaa Boadi**. © 2026 Isaac Nyamaa Boadi.
+All rights reserved. See [LICENSE](./LICENSE)._
+
 A small but realistic help desk / ticket management system built as a
 teaching project. It demonstrates the full lifecycle of a modern web app:
 

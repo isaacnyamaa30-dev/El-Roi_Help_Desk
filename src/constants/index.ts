@@ -8,6 +8,12 @@ export const APP_NAME = 'EL-ROI Help Desk Tracker'
 export const APP_TAGLINE = 'Every Issue Seen. Every Request Tracked.'
 export const APP_TAGLINE_SECONDARY = 'Report. Track. Resolve.'
 
+/** Developer and copyright owner. */
+export const APP_AUTHOR = 'Isaac Nyamaa Boadi'
+
+/** e.g. "© 2026 Isaac Nyamaa Boadi. All rights reserved." */
+export const APP_COPYRIGHT = `© ${new Date().getFullYear()} ${APP_AUTHOR}. All rights reserved.`
+
 /* ------------------------------------------------------------------ roles */
 
 export const ROLES = {

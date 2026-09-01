@@ -35,6 +35,7 @@
 
   /* surfaces + text */
   --color-neutral-bg: #f2f4fb;
+  --color-mist: #e4e9f4; /* soft navy-grey band behind white cards */
   --color-ink: #1e2633;
   --color-ink-soft: #5b6472;
 

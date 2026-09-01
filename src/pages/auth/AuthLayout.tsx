@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { APP_TAGLINE } from '../../constants'
+import { APP_COPYRIGHT, APP_TAGLINE } from '../../constants'
 import { isSupabaseConfigured } from '../../lib/supabase'
 
 export function AuthLayout({
@@ -39,6 +39,9 @@ export function AuthLayout({
         </div>
 
         <div className="mt-4 text-center text-sm text-blue-100/80">{footer}</div>
+        <p className="mt-6 text-center text-xs text-blue-100/50">
+          {APP_COPYRIGHT}
+        </p>
       </div>
     </div>
   )

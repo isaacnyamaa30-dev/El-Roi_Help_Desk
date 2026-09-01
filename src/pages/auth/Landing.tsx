@@ -2,6 +2,8 @@ import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { homeForRole } from '../../components/layout/navConfig'
 import {
+  APP_AUTHOR,
+  APP_COPYRIGHT,
   APP_NAME,
   APP_TAGLINE,
   APP_TAGLINE_SECONDARY,
@@ -65,28 +67,36 @@ export function Landing() {
         </div>
       </section>
 
-      {/* three-step band */}
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green text-sm font-bold text-white">
-                {i + 1}
-              </span>
-              <h2 className="mt-4 font-display text-lg font-bold text-navy">
-                {f.title}
-              </h2>
-              <p className="mt-1 text-sm text-ink-soft">{f.body}</p>
-            </div>
-          ))}
+      {/* three-step band — soft navy-grey so the white cards stand out */}
+      <main className="flex-1 bg-mist">
+        <div className="mx-auto w-full max-w-5xl px-6 py-16">
+          <h2 className="text-center font-display text-sm font-bold uppercase tracking-widest text-navy">
+            How it works
+          </h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.title}
+                className="rounded-xl border-t-4 border-green bg-white p-6 shadow-md"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green text-base font-bold text-white">
+                  {i + 1}
+                </span>
+                <h3 className="mt-4 font-display text-lg font-bold text-navy">
+                  {f.title}
+                </h3>
+                <p className="mt-1 text-sm text-ink-soft">{f.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
 
-      <footer className="border-t-2 border-gold bg-navy px-6 py-4 text-center text-xs text-blue-100/70">
-        {APP_NAME} · {APP_TAGLINE}
+      <footer className="border-t-2 border-gold bg-navy px-6 py-5 text-center text-xs text-blue-100/70">
+        <p className="font-medium text-blue-100/90">
+          {APP_NAME} · Designed &amp; developed by {APP_AUTHOR}
+        </p>
+        <p className="mt-1">{APP_COPYRIGHT}</p>
       </footer>
     </div>
   )

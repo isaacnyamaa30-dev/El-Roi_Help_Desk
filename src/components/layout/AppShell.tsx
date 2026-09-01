@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { APP_TAGLINE, ROLE_LABELS } from '../../constants'
+import { APP_COPYRIGHT, APP_TAGLINE, ROLE_LABELS } from '../../constants'
 import { initials } from '../../utils/format'
 import { navForRole } from './navConfig'
 
@@ -101,8 +101,13 @@ export function AppShell() {
           </div>
         )}
 
-        <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
-          <Outlet />
+        <main className="flex min-w-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6">
+          <div className="flex-1">
+            <Outlet />
+          </div>
+          <footer className="mt-8 border-t border-gray-200 pt-4 text-center text-xs text-ink-soft">
+            {APP_COPYRIGHT}
+          </footer>
         </main>
       </div>
     </div>
