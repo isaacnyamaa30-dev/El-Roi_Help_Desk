@@ -3,8 +3,10 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { AuthLayout } from './AuthLayout'
 import { useAuth } from '../../hooks/useAuth'
 import { signIn } from '../../services/auth'
+import { supabase } from '../../lib/supabase'
 import { homeForRole } from '../../components/layout/navConfig'
 import { validateLogin, hasErrors } from '../../utils/validation'
+import type { Role } from '../../constants'
 
 const inputClass =
   'mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-royal focus:outline-none focus:ring-1 focus:ring-royal'
@@ -30,9 +32,17 @@ export function Login() {
 
     setBusy(true)
     try {
-      await signIn(email, password)
-      const dest =
-        (location.state as { from?: string } | null)?.from ?? '/dashboard'
+      const { user } = await signIn(email, password)
+      // Look up the role so staff / agents land on the right home page.
+      let dest = (location.state as { from?: string } | null)?.from
+      if (!dest) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        dest = homeForRole((prof?.role as Role | undefined) ?? null)
+      }
       navigate(dest, { replace: true })
     } catch (err) {
       setFormError(
