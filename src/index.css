@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+/*
+  EL-ROI Help Desk Tracker — global styles
+  Brand palette (see tailwind theme tokens below):
+    navy   #0b1f3a  royal #1d4ed8  gold #d4a017  neutral bg #f5f7fa
+*/
+
+@theme {
+  --color-navy: #0b1f3a;
+  --color-navy-light: #12305c;
+  --color-royal: #1d4ed8;
+  --color-royal-dark: #1e40af;
+  --color-gold: #d4a017;
+  --color-gold-light: #f0c04b;
+  --color-neutral-bg: #f5f7fa;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-neutral-bg);
+  color: #1f2937;
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
