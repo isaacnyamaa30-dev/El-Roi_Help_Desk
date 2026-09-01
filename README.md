@@ -3,7 +3,7 @@
 **Every Issue Seen. Every Request Tracked.**
 
 _Designed and developed by **Isaac Nyamaa Boadi**. © 2026 Isaac Nyamaa Boadi.
-All rights reserved. See [LICENSE](./LICENSE)._
+All Rights Reserved. See [LICENSE](./LICENSE)._
 
 **Contact / service enquiries:** +233 24 374 4689 (call / WhatsApp) ·
 isaacnyamaa30@gmail.com
@@ -46,8 +46,27 @@ only by an administrator (or the seed script).
 - **React Router** for routing
 - **Tailwind CSS** for styling
 - **Supabase** — PostgreSQL, Auth, Row Level Security, Data API
+- **PWA** (`vite-plugin-pwa` + Workbox) — installable on phones and laptops
 - **GitHub** for version control
 - **Vercel** for deployment
+
+---
+
+## Install the app (PWA)
+
+The app is a Progressive Web App, so it can be installed like a native app:
+
+- **Android / Chrome / Edge:** open the site, then tap **Install app** on the
+  landing page (or use the browser's ⋮ menu → *Install* / *Add to Home
+  screen*).
+- **Desktop Chrome / Edge:** click the **install icon** in the address bar,
+  or the **Install app** button on the landing page.
+- **iPhone / iPad (Safari):** tap the **Share** icon → **Add to Home
+  Screen**.
+
+Once installed it opens in its own window, has its own icon, and keeps the
+app shell cached so it starts instantly (ticket data still needs a
+connection).
 
 ---
 

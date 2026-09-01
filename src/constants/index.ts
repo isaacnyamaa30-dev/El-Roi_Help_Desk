@@ -11,8 +11,8 @@ export const APP_TAGLINE_SECONDARY = 'Report. Track. Resolve.'
 /** Developer and copyright owner. */
 export const APP_AUTHOR = 'Isaac Nyamaa Boadi'
 
-/** e.g. "© 2026 Isaac Nyamaa Boadi. All rights reserved." */
-export const APP_COPYRIGHT = `© ${new Date().getFullYear()} ${APP_AUTHOR}. All rights reserved.`
+/** e.g. "© 2026 Isaac Nyamaa Boadi. All Rights Reserved." */
+export const APP_COPYRIGHT = `© ${new Date().getFullYear()} ${APP_AUTHOR}. All Rights Reserved.`
 
 /** Contact details for clients who want to reach out about services. */
 export const APP_CONTACT = {

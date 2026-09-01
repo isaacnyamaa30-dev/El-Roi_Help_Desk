@@ -1,5 +1,6 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { InstallButton } from '../../components/common/InstallButton'
 import { homeForRole } from '../../components/layout/navConfig'
 import {
   APP_AUTHOR,
@@ -64,7 +65,11 @@ export function Landing() {
             >
               Create an account
             </Link>
+            <InstallButton variant="ghost" />
           </div>
+          <p className="mt-3 text-xs text-blue-100/60">
+            Works in your browser — or install it on your phone or laptop.
+          </p>
         </div>
       </section>
 

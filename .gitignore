@@ -31,3 +31,6 @@ dist-ssr
 .vercel
 .env*
 !.env.example
+
+# vite-plugin-pwa dev output
+dev-dist

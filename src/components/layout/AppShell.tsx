@@ -8,7 +8,31 @@ import {
   ROLE_LABELS,
 } from '../../constants'
 import { initials } from '../../utils/format'
+import { useInstallPrompt } from '../../hooks/useInstallPrompt'
+import { useToast } from '../common/Toast'
 import { navForRole } from './navConfig'
+
+/** "Install app" entry in the sidebar — hidden unless the app can be installed. */
+function SidebarInstall() {
+  const { canInstall, isIOS, promptInstall } = useInstallPrompt()
+  const { notify } = useToast()
+  if (!canInstall && !isIOS) return null
+  return (
+    <button
+      onClick={() =>
+        isIOS
+          ? notify(
+              'In Safari, tap Share, then "Add to Home Screen" to install the app.',
+              'info',
+            )
+          : promptInstall()
+      }
+      className="mb-1 block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gold hover:bg-navy-light"
+    >
+      ⬇ Install app
+    </button>
+  )
+}
 
 export function AppShell() {
   const { profile, role, signOut } = useAuth()
@@ -41,12 +65,15 @@ export function AppShell() {
           {item.label}
         </NavLink>
       ))}
-      <button
-        onClick={handleSignOut}
-        className="mt-auto block rounded-md px-3 py-2 text-left text-sm font-medium text-gray-200 hover:bg-navy-light hover:text-white"
-      >
-        Logout
-      </button>
+      <div className="mt-auto">
+        <SidebarInstall />
+        <button
+          onClick={handleSignOut}
+          className="block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gray-200 hover:bg-navy-light hover:text-white"
+        >
+          Logout
+        </button>
+      </div>
     </nav>
   )
 
