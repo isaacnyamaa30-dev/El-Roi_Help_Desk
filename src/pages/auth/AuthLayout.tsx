@@ -22,8 +22,8 @@ export function AuthLayout({
           <p className="mt-1 text-sm text-blue-100/80">{APP_TAGLINE}</p>
         </Link>
 
-        <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-xl">
-          <div className="h-1.5 bg-gold" />
+        <div className="auth-card mt-6 overflow-hidden">
+          <div className="h-2 bg-gradient-to-b from-gold-light to-gold" />
           <div className="p-6">
             <h1 className="font-display text-lg font-bold text-navy">{title}</h1>
 
