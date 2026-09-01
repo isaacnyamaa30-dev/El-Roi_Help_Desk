@@ -14,6 +14,15 @@ export const APP_AUTHOR = 'Isaac Nyamaa Boadi'
 /** e.g. "© 2026 Isaac Nyamaa Boadi. All rights reserved." */
 export const APP_COPYRIGHT = `© ${new Date().getFullYear()} ${APP_AUTHOR}. All rights reserved.`
 
+/** Contact details for clients who want to reach out about services. */
+export const APP_CONTACT = {
+  phoneDisplay: '+233 24 374 4689',
+  phoneHref: 'tel:+233243744689',
+  whatsappHref: 'https://wa.me/233243744689',
+  email: 'isaacnyamaa30@gmail.com',
+  emailHref: 'mailto:isaacnyamaa30@gmail.com',
+} as const
+
 /* ------------------------------------------------------------------ roles */
 
 export const ROLES = {

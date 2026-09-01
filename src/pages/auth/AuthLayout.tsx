@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { APP_COPYRIGHT, APP_TAGLINE } from '../../constants'
+import { APP_CONTACT, APP_COPYRIGHT, APP_TAGLINE } from '../../constants'
 import { isSupabaseConfigured } from '../../lib/supabase'
 
 export function AuthLayout({
@@ -39,7 +39,18 @@ export function AuthLayout({
         </div>
 
         <div className="mt-4 text-center text-sm text-blue-100/80">{footer}</div>
-        <p className="mt-6 text-center text-xs text-blue-100/50">
+
+        <p className="mt-6 text-center text-xs text-blue-100/70">
+          Need help? Call{' '}
+          <a href={APP_CONTACT.phoneHref} className="font-medium hover:text-gold">
+            {APP_CONTACT.phoneDisplay}
+          </a>{' '}
+          or email{' '}
+          <a href={APP_CONTACT.emailHref} className="font-medium hover:text-gold">
+            {APP_CONTACT.email}
+          </a>
+        </p>
+        <p className="mt-2 text-center text-xs text-blue-100/50">
           {APP_COPYRIGHT}
         </p>
       </div>

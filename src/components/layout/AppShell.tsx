@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { APP_COPYRIGHT, APP_TAGLINE, ROLE_LABELS } from '../../constants'
+import {
+  APP_CONTACT,
+  APP_COPYRIGHT,
+  APP_TAGLINE,
+  ROLE_LABELS,
+} from '../../constants'
 import { initials } from '../../utils/format'
 import { navForRole } from './navConfig'
 
@@ -106,7 +111,17 @@ export function AppShell() {
             <Outlet />
           </div>
           <footer className="mt-8 border-t border-gray-200 pt-4 text-center text-xs text-ink-soft">
-            {APP_COPYRIGHT}
+            <p>
+              Contact:{' '}
+              <a href={APP_CONTACT.phoneHref} className="hover:text-royal">
+                {APP_CONTACT.phoneDisplay}
+              </a>{' '}
+              ·{' '}
+              <a href={APP_CONTACT.emailHref} className="hover:text-royal">
+                {APP_CONTACT.email}
+              </a>
+            </p>
+            <p className="mt-1">{APP_COPYRIGHT}</p>
           </footer>
         </main>
       </div>

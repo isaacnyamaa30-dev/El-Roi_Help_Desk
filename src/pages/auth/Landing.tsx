@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { homeForRole } from '../../components/layout/navConfig'
 import {
   APP_AUTHOR,
+  APP_CONTACT,
   APP_COPYRIGHT,
   APP_NAME,
   APP_TAGLINE,
@@ -89,11 +90,52 @@ export function Landing() {
               </div>
             ))}
           </div>
+
+          {/* contact — for clients who want to reach out about services */}
+          <div className="mt-12 rounded-xl bg-navy p-8 text-center text-white shadow-md">
+            <h3 className="font-display text-lg font-bold">
+              Need support or want to request a service?
+            </h3>
+            <p className="mt-1 text-sm text-blue-100/80">
+              Reach the EL-ROI team directly — we&rsquo;re happy to help.
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={APP_CONTACT.phoneHref}
+                className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition hover:bg-gold-light"
+              >
+                Call {APP_CONTACT.phoneDisplay}
+              </a>
+              <a
+                href={APP_CONTACT.whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md bg-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-dark"
+              >
+                WhatsApp
+              </a>
+              <a
+                href={APP_CONTACT.emailHref}
+                className="rounded-md border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                {APP_CONTACT.email}
+              </a>
+            </div>
+          </div>
         </div>
       </main>
 
-      <footer className="border-t-2 border-gold bg-navy px-6 py-5 text-center text-xs text-blue-100/70">
-        <p className="font-medium text-blue-100/90">
+      <footer className="border-t-2 border-gold bg-navy px-6 py-6 text-center text-xs text-blue-100/70">
+        <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+          <a href={APP_CONTACT.phoneHref} className="hover:text-gold">
+            {APP_CONTACT.phoneDisplay}
+          </a>
+          <span aria-hidden>·</span>
+          <a href={APP_CONTACT.emailHref} className="hover:text-gold">
+            {APP_CONTACT.email}
+          </a>
+        </p>
+        <p className="mt-2 font-medium text-blue-100/90">
           {APP_NAME} · Designed &amp; developed by {APP_AUTHOR}
         </p>
         <p className="mt-1">{APP_COPYRIGHT}</p>

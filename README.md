@@ -5,6 +5,9 @@
 _Designed and developed by **Isaac Nyamaa Boadi**. © 2026 Isaac Nyamaa Boadi.
 All rights reserved. See [LICENSE](./LICENSE)._
 
+**Contact / service enquiries:** +233 24 374 4689 (call / WhatsApp) ·
+isaacnyamaa30@gmail.com
+
 A small but realistic help desk / ticket management system built as a
 teaching project. It demonstrates the full lifecycle of a modern web app:
 
