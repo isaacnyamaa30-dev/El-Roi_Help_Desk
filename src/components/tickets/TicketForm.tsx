@@ -128,7 +128,7 @@ export function TicketForm({
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-md bg-royal px-4 py-2 text-sm font-medium text-white hover:bg-royal-dark disabled:opacity-60"
+        className="rounded-md bg-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-dark disabled:opacity-60"
       >
         {submitting ? 'Submitting…' : 'Submit Ticket'}
       </button>

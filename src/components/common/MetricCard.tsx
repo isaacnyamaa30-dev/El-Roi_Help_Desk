@@ -9,16 +9,22 @@ export function MetricCard({
 }) {
   return (
     <div
-      className={`rounded-lg border p-4 ${
+      className={`rounded-lg border bg-white p-4 shadow-sm ${
         accent
-          ? 'border-gold/40 bg-gold/10'
-          : 'border-gray-200 bg-white'
+          ? 'border-gold/50 border-t-4 border-t-gold'
+          : 'border-gray-200 border-t-4 border-t-navy/70'
       }`}
     >
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
         {label}
       </p>
-      <p className="mt-1 text-2xl font-semibold text-navy">{value}</p>
+      <p
+        className={`mt-1 font-display text-2xl font-bold ${
+          accent ? 'text-gold-dark' : 'text-navy'
+        }`}
+      >
+        {value}
+      </p>
     </div>
   )
 }

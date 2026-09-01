@@ -53,10 +53,12 @@ export function TicketTable({
     switch (col) {
       case 'number':
         return (
-          <span className="font-mono text-xs text-royal">{t.ticket_number}</span>
+          <span className="font-mono text-xs font-semibold text-royal">
+            {t.ticket_number}
+          </span>
         )
       case 'title':
-        return <span className="font-medium text-gray-800">{t.title}</span>
+        return <span className="font-medium text-navy">{t.title}</span>
       case 'category':
         return t.category
       case 'priority':
@@ -81,10 +83,10 @@ export function TicketTable({
       {/* table (md and up) */}
       <div className="hidden overflow-x-auto rounded-lg border border-gray-200 bg-white md:block">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+          <thead className="border-b border-navy/15 bg-navy-tint text-xs uppercase tracking-wide text-navy">
             <tr>
               {columns.map((c) => (
-                <th key={c} className="px-4 py-3 font-medium">
+                <th key={c} className="px-4 py-3 font-semibold">
                   {HEADERS[c]}
                 </th>
               ))}
@@ -92,7 +94,7 @@ export function TicketTable({
           </thead>
           <tbody className="divide-y divide-gray-100">
             {tickets.map((t) => (
-              <tr key={t.id} className="hover:bg-gray-50">
+              <tr key={t.id} className="transition hover:bg-navy-tint/50">
                 {columns.map((c) => (
                   <td key={c} className="px-4 py-3 align-middle">
                     {c === 'number' || c === 'title' ? (
@@ -116,16 +118,16 @@ export function TicketTable({
           <li key={t.id}>
             <Link
               to={`${basePath}/${t.id}`}
-              className="block rounded-lg border border-gray-200 bg-white p-4"
+              className="block rounded-lg border border-gray-200 border-l-4 border-l-navy bg-white p-4"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-royal">
+                <span className="font-mono text-xs font-semibold text-royal">
                   {t.ticket_number}
                 </span>
                 <StatusBadge status={t.status} />
               </div>
-              <p className="mt-1 font-medium text-gray-800">{t.title}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+              <p className="mt-1 font-medium text-navy">{t.title}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-soft">
                 <PriorityBadge priority={t.priority} />
                 <span>{t.category}</span>
                 <span>·</span>

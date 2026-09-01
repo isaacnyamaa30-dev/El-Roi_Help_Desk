@@ -7,44 +7,86 @@ import {
   APP_TAGLINE_SECONDARY,
 } from '../../constants'
 
+const FEATURES = [
+  {
+    title: 'Report',
+    body: 'Describe your issue in a quick form and get a tracked ticket number.',
+  },
+  {
+    title: 'Track',
+    body: 'Watch your ticket move through every stage, with a full activity trail.',
+  },
+  {
+    title: 'Resolve',
+    body: 'Work with a dedicated support agent through to a confirmed fix.',
+  },
+]
+
 export function Landing() {
   const { session, role, loading } = useAuth()
   if (!loading && session) return <Navigate to={homeForRole(role)} replace />
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="bg-navy px-6 py-4 text-white">
-        <p className="text-lg font-semibold">{APP_NAME}</p>
+    <div className="flex min-h-screen flex-col bg-white">
+      <header className="border-b-2 border-gold bg-navy px-6 py-4 text-white">
+        <p className="font-display text-lg font-bold uppercase tracking-wide">
+          EL-ROI <span className="text-gold">Help Desk</span>
+        </p>
       </header>
 
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-        <h1 className="text-3xl font-bold text-navy sm:text-4xl">{APP_NAME}</h1>
-        <p className="mt-3 text-lg text-royal">{APP_TAGLINE}</p>
-        <p className="mt-1 text-sm text-gray-500">{APP_TAGLINE_SECONDARY}</p>
+      {/* hero */}
+      <section className="brand-navy-surface px-6 py-20 text-center text-white">
+        <div className="mx-auto max-w-3xl">
+          <span className="inline-block rounded-full bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy">
+            Help Desk Tracker
+          </span>
+          <h1 className="mt-5 font-display text-4xl font-extrabold sm:text-5xl">
+            {APP_NAME}
+          </h1>
+          <p className="mt-4 text-lg text-gold">{APP_TAGLINE}</p>
+          <p className="mt-2 text-sm text-blue-100/80">
+            {APP_TAGLINE_SECONDARY}
+          </p>
 
-        <p className="mt-6 max-w-xl text-gray-600">
-          Report an issue, track its progress, and work with a support agent
-          through to resolution — every action recorded along the way.
-        </p>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/login"
+              className="rounded-md bg-gold px-6 py-2.5 text-sm font-semibold text-navy transition hover:bg-gold-light"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/register"
+              className="rounded-md border border-white/40 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Create an account
+            </Link>
+          </div>
+        </div>
+      </section>
 
-        <div className="mt-8 flex gap-3">
-          <Link
-            to="/login"
-            className="rounded-md bg-royal px-5 py-2.5 text-sm font-medium text-white hover:bg-royal-dark"
-          >
-            Log in
-          </Link>
-          <Link
-            to="/register"
-            className="rounded-md border border-royal px-5 py-2.5 text-sm font-medium text-royal hover:bg-royal/5"
-          >
-            Create an account
-          </Link>
+      {/* three-step band */}
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
+        <div className="grid gap-6 sm:grid-cols-3">
+          {FEATURES.map((f, i) => (
+            <div
+              key={f.title}
+              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green text-sm font-bold text-white">
+                {i + 1}
+              </span>
+              <h2 className="mt-4 font-display text-lg font-bold text-navy">
+                {f.title}
+              </h2>
+              <p className="mt-1 text-sm text-ink-soft">{f.body}</p>
+            </div>
+          ))}
         </div>
       </main>
 
-      <footer className="px-6 py-4 text-center text-xs text-gray-400">
-        {APP_NAME}
+      <footer className="border-t-2 border-gold bg-navy px-6 py-4 text-center text-xs text-blue-100/70">
+        {APP_NAME} · {APP_TAGLINE}
       </footer>
     </div>
   )

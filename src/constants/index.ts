@@ -63,15 +63,19 @@ export const TICKET_STATUS_ORDER: TicketStatus[] = [
   TICKET_STATUS.REOPENED,
 ]
 
-/** Tailwind classes for each status badge. */
+/**
+ * Tailwind classes for each status badge. Tuned to the EL-ROI brand:
+ * navy for new/active, gold for in-flight, green for done.
+ * Each badge also carries a ring so colour is never the only signal.
+ */
 export const TICKET_STATUS_STYLES: Record<TicketStatus, string> = {
-  open: 'bg-blue-100 text-blue-800',
-  assigned: 'bg-indigo-100 text-indigo-800',
-  in_progress: 'bg-amber-100 text-amber-800',
-  waiting_for_user: 'bg-purple-100 text-purple-800',
-  resolved: 'bg-green-100 text-green-800',
-  closed: 'bg-gray-200 text-gray-700',
-  reopened: 'bg-rose-100 text-rose-800',
+  open: 'bg-navy-tint text-navy ring-1 ring-navy/20',
+  assigned: 'bg-royal/10 text-royal-dark ring-1 ring-royal/20',
+  in_progress: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
+  waiting_for_user: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300',
+  resolved: 'bg-green-tint text-green-dark ring-1 ring-green/30',
+  closed: 'bg-gray-200 text-gray-700 ring-1 ring-gray-300',
+  reopened: 'bg-rose-100 text-rose-800 ring-1 ring-rose-300',
 }
 
 /* ------------------------------------------------------------- priorities */
@@ -101,10 +105,10 @@ export const TICKET_PRIORITY_OPTIONS: TicketPriority[] = [
 ]
 
 export const TICKET_PRIORITY_STYLES: Record<TicketPriority, string> = {
-  low: 'bg-gray-100 text-gray-700',
-  medium: 'bg-sky-100 text-sky-800',
-  high: 'bg-orange-100 text-orange-800',
-  urgent: 'bg-red-100 text-red-800',
+  low: 'bg-gray-100 text-gray-700 ring-1 ring-gray-300',
+  medium: 'bg-navy-tint text-navy ring-1 ring-navy/20',
+  high: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
+  urgent: 'bg-red-100 text-red-800 ring-1 ring-red-300',
 }
 
 export const DEFAULT_PRIORITY: TicketPriority = TICKET_PRIORITY.MEDIUM

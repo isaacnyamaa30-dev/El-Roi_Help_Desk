@@ -20,7 +20,7 @@ interface ToastApi {
 const ToastContext = createContext<ToastApi | undefined>(undefined)
 
 const STYLES: Record<ToastKind, string> = {
-  success: 'bg-green-600',
+  success: 'bg-green',
   error: 'bg-red-600',
   info: 'bg-navy',
 }

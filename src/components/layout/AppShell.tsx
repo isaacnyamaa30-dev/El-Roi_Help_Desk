@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { APP_NAME, APP_TAGLINE, ROLE_LABELS } from '../../constants'
+import { APP_TAGLINE, ROLE_LABELS } from '../../constants'
 import { initials } from '../../utils/format'
 import { navForRole } from './navConfig'
 
@@ -19,8 +19,8 @@ export function AppShell() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `block rounded-md px-3 py-2 text-sm font-medium transition ${
       isActive
-        ? 'bg-royal text-white'
-        : 'text-gray-200 hover:bg-navy-light hover:text-white'
+        ? 'bg-gold text-navy shadow-sm'
+        : 'text-blue-100/90 hover:bg-navy-light hover:text-white'
     }`
 
   const sidebar = (
@@ -46,9 +46,9 @@ export function AppShell() {
   )
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       {/* top bar */}
-      <header className="flex items-center justify-between gap-3 bg-navy px-4 py-3 text-white">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 border-gold bg-navy px-4 py-3 text-white">
         <div className="flex items-center gap-3">
           <button
             className="rounded-md p-1 text-gray-200 hover:bg-navy-light md:hidden"
@@ -60,10 +60,12 @@ export function AppShell() {
             <span className="mt-1 block h-0.5 w-5 bg-current" />
           </button>
           <div>
-            <p className="text-sm font-semibold leading-tight sm:text-base">
-              {APP_NAME}
+            <p className="font-display text-sm font-bold uppercase leading-tight tracking-wide sm:text-base">
+              EL-ROI <span className="text-gold">Help Desk</span>
             </p>
-            <p className="hidden text-xs text-gray-300 sm:block">{APP_TAGLINE}</p>
+            <p className="hidden text-xs text-blue-100/70 sm:block">
+              {APP_TAGLINE}
+            </p>
           </div>
         </div>
 
@@ -82,14 +84,16 @@ export function AppShell() {
         </div>
       </header>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         {/* desktop sidebar */}
-        <aside className="hidden w-56 shrink-0 bg-navy md:block">{sidebar}</aside>
+        <aside className="hidden w-56 shrink-0 overflow-y-auto bg-navy-deep md:block">
+          {sidebar}
+        </aside>
 
         {/* mobile drawer */}
         {mobileOpen && (
           <div className="fixed inset-0 z-40 flex md:hidden">
-            <div className="w-56 bg-navy">{sidebar}</div>
+            <div className="w-56 bg-navy-deep">{sidebar}</div>
             <div
               className="flex-1 bg-black/40"
               onClick={() => setMobileOpen(false)}
@@ -97,7 +101,7 @@ export function AppShell() {
           </div>
         )}
 
-        <main className="min-w-0 flex-1 p-4 sm:p-6">
+        <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
           <Outlet />
         </main>
       </div>

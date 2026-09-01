@@ -1,19 +1,46 @@
 @import 'tailwindcss';
 
 /*
-  EL-ROI Help Desk Tracker — global styles
-  Brand palette (see tailwind theme tokens below):
-    navy   #0b1f3a  royal #1d4ed8  gold #d4a017  neutral bg #f5f7fa
+  EL-ROI Help Desk Tracker — global styles.
+
+  Brand palette sampled from the EL-ROI company flyer:
+    navy   #17296E  — the EL-ROI wordmark / dark panels
+    green  #1E7A3A  — "Cleaning & Driving Services" / accent panels
+    gold   #F4B400  — "Excellent Service Guaranteed" badge / highlights
+    white + very light navy-grey backgrounds
 */
 
 @theme {
-  --color-navy: #0b1f3a;
-  --color-navy-light: #12305c;
-  --color-royal: #1d4ed8;
-  --color-royal-dark: #1e40af;
-  --color-gold: #d4a017;
-  --color-gold-light: #f0c04b;
-  --color-neutral-bg: #f5f7fa;
+  /* primary brand — navy */
+  --color-navy: #17296e;
+  --color-navy-deep: #0e1b49;
+  --color-navy-light: #2c43a0;
+  --color-navy-tint: #eef1fb;
+
+  /* interactive blue (buttons, links, focus) — a step brighter than navy */
+  --color-royal: #1f3f9e;
+  --color-royal-dark: #16307a;
+
+  /* secondary brand — green (success / positive) */
+  --color-green: #1e7a3a;
+  --color-green-dark: #15602d;
+  --color-green-light: #2fa357;
+  --color-green-tint: #e6f4ec;
+
+  /* accent — gold */
+  --color-gold: #f4b400;
+  --color-gold-dark: #c98a00;
+  --color-gold-light: #ffd24d;
+  --color-gold-tint: #fbf1d6;
+
+  /* surfaces + text */
+  --color-neutral-bg: #f2f4fb;
+  --color-ink: #1e2633;
+  --color-ink-soft: #5b6472;
+
+  /* type */
+  --font-display: 'Montserrat', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 html,
@@ -24,7 +51,44 @@ body,
 
 body {
   margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+
+  /* The EL-ROI flyer sits behind the whole app as a faint fixed wash —
+     heavily blurred so it reads as abstract brand colour, never as text.
+     A near-opaque neutral layer keeps every panel fully legible. */
   background-color: var(--color-neutral-bg);
-  color: #1f2937;
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-image: linear-gradient(
+      rgba(242, 244, 251, 0.955),
+      rgba(242, 244, 251, 0.965)
+    ),
+    url('./assets/brand-bg-soft.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Brand backdrop for the navy marketing / auth surfaces: the flyer shows
+   through a deep navy gradient for depth without hurting contrast. */
+.brand-navy-surface {
+  background-color: var(--color-navy);
+  background-image: linear-gradient(
+      rgba(20, 36, 98, 0.92),
+      rgba(11, 22, 62, 0.96)
+    ),
+    url('./assets/brand-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Headings carry the display face, echoing the flyer's bold wordmark. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }

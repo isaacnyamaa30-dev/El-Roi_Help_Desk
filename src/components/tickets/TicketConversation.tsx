@@ -27,18 +27,20 @@ function MessageBubble({
         {initials(senderName)}
       </span>
       <div className={`max-w-[80%] ${mine ? 'text-right' : ''}`}>
-        <p className="text-xs text-gray-500">
-          <span className="font-medium text-gray-700">{senderName}</span>
+        <p className="text-xs text-ink-soft">
+          <span className="font-medium text-ink">{senderName}</span>
           {senderRole && senderRole !== ROLES.USER && (
-            <span className="ml-1 text-gold">· {ROLE_LABELS[senderRole]}</span>
+            <span className="ml-1 font-medium text-green">
+              · {ROLE_LABELS[senderRole]}
+            </span>
           )}
           <span className="ml-1">· {formatDateTime(message.created_at)}</span>
         </p>
         <div
-          className={`mt-1 inline-block whitespace-pre-wrap rounded-lg px-3 py-2 text-sm ${
+          className={`mt-1 inline-block whitespace-pre-wrap rounded-lg px-3 py-2 text-sm text-ink ${
             isStaffSide
-              ? 'bg-white text-gray-800 ring-1 ring-gray-200'
-              : 'bg-royal/10 text-gray-800'
+              ? 'bg-navy-tint ring-1 ring-navy/10'
+              : 'bg-gold-tint ring-1 ring-gold/30'
           }`}
         >
           {message.message}
@@ -102,7 +104,7 @@ export function TicketConversation({
           <button
             type="submit"
             disabled={sending || !text.trim()}
-            className="rounded-md bg-royal px-4 py-2 text-sm font-medium text-white hover:bg-royal-dark disabled:opacity-60"
+            className="rounded-md bg-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-dark disabled:opacity-60"
           >
             {sending ? 'Sending…' : 'Send Response'}
           </button>

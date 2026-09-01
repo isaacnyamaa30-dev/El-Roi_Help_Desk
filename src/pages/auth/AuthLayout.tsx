@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { APP_NAME, APP_TAGLINE } from '../../constants'
+import { APP_TAGLINE } from '../../constants'
 import { isSupabaseConfigured } from '../../lib/supabase'
 
 export function AuthLayout({
@@ -13,15 +13,19 @@ export function AuthLayout({
   footer: ReactNode
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-navy px-4 py-10">
+    <div className="brand-navy-surface flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Link to="/" className="block text-center text-white">
-          <p className="text-xl font-semibold">{APP_NAME}</p>
-          <p className="text-sm text-gray-300">{APP_TAGLINE}</p>
+          <p className="font-display text-2xl font-extrabold uppercase tracking-wide">
+            EL-ROI <span className="text-gold">Help Desk</span>
+          </p>
+          <p className="mt-1 text-sm text-blue-100/80">{APP_TAGLINE}</p>
         </Link>
 
-        <div className="mt-6 rounded-lg bg-white p-6 shadow-lg">
-          <h1 className="text-lg font-semibold text-navy">{title}</h1>
+        <div className="mt-6 overflow-hidden rounded-lg bg-white shadow-xl">
+          <div className="h-1.5 bg-gold" />
+          <div className="p-6">
+            <h1 className="font-display text-lg font-bold text-navy">{title}</h1>
 
           {!isSupabaseConfigured && (
             <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
@@ -30,10 +34,11 @@ export function AuthLayout({
             </p>
           )}
 
-          <div className="mt-4">{children}</div>
+            <div className="mt-4">{children}</div>
+          </div>
         </div>
 
-        <div className="mt-4 text-center text-sm text-gray-300">{footer}</div>
+        <div className="mt-4 text-center text-sm text-blue-100/80">{footer}</div>
       </div>
     </div>
   )

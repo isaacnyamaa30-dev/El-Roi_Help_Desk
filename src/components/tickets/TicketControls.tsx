@@ -91,7 +91,7 @@ export function AgentAssignment({
         <button
           onClick={() => value && onAssign(value)}
           disabled={busy || !value || value === currentAgentId}
-          className="rounded-md bg-royal px-3 py-2 text-sm font-medium text-white hover:bg-royal-dark disabled:opacity-60"
+          className="rounded-md bg-green px-3 py-2 text-sm font-semibold text-white transition hover:bg-green-dark disabled:opacity-60"
         >
           {busy ? 'Saving…' : 'Assign'}
         </button>
