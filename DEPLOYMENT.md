@@ -17,7 +17,10 @@ This project has been provisioned and deployed. Details below.
 - **Migrations applied:** `0001_init_schema.sql`, `0002_rls_policies.sql`
   (via `supabase db push`)
 - **Seeded:** 8 accounts, 12 tickets, conversations and history
-  (via `npm run seed`)
+  (via `npm run seed`). Ticket numbers are issued from a Postgres sequence
+  that never rewinds, so after re-seeding they continue upward (e.g.
+  `ERH-000014`+) rather than restarting at `ERH-000001` — this is the same
+  way a real help desk behaves.
 - **Auth config:**
   - Site URL: `https://el-roi-help-desk.vercel.app`
   - Redirect allow-list includes the Vercel domain, its preview
