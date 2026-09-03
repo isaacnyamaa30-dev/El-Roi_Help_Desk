@@ -71,6 +71,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Reload once when a new service worker takes control, so an updated
+         version never sticks behind a stale cached shell. -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        var swReloaded = false
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          if (swReloaded) return
+          swReloaded = true
+          window.location.reload()
+        })
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
