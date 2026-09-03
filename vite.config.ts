@@ -10,7 +10,9 @@ export default defineConfig({
     tailwindcss(),
     // Makes the app installable on phones and laptops (Progressive Web App).
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' so users get a visible "Update Now" banner (spec §82)
+      // instead of a silent swap that can leave a half-updated page.
+      registerType: 'prompt',
       injectRegister: false, // registered manually via <PwaManager />
 
       includeAssets: [
