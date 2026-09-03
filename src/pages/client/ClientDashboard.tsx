@@ -4,6 +4,7 @@ import { MetricCard } from '../../components/common/MetricCard'
 import { LoadingSpinner } from '../../components/common/LoadingSpinner'
 import { EmptyState } from '../../components/common/EmptyState'
 import { BookingTable } from '../../components/bookings/BookingTable'
+import { ShareButton } from '../../components/common/ShareButton'
 import { useBookingList } from '../../hooks/useBookings'
 import { useAuth } from '../../hooks/useAuth'
 import { countByStatus } from '../../utils/metrics'
@@ -75,6 +76,13 @@ export function ClientDashboard() {
           columns={['number', 'service', 'staff', 'date', 'amount', 'status']}
         />
       )}
+
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-4">
+        <p className="text-sm text-ink-soft">
+          Know someone who needs weekend help? Send them the app.
+        </p>
+        <ShareButton variant="light" />
+      </div>
     </div>
   )
 }

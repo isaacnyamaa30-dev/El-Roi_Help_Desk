@@ -162,7 +162,22 @@ admin once the business confirms one.
 
 ---
 
-## 7. Install the app (PWA)
+## 7. Share the app
+
+The app is just a website — share the link and people can use it straight
+away, no download required:
+
+**https://el-roi-help-desk.vercel.app**
+
+- The link carries **Open Graph / Twitter Card** metadata, so pasting it in
+  WhatsApp, Facebook, X or LinkedIn shows a preview card with the name,
+  tagline and a branded image (`/og-image.png`).
+- The **Share this app** button on the landing page uses the phone's native
+  share sheet (Web Share API) and falls back to copying the link on desktop.
+
+---
+
+## 8. Install the app (PWA)
 
 - **Android / Chrome / Edge:** tap **Install app** on the landing page, or
   the browser menu → *Install* / *Add to Home screen*.
@@ -176,7 +191,7 @@ version is deployed. Bookings are **not** submitted offline — you get a
 
 ---
 
-## 8. Project structure
+## 9. Project structure
 
 ```text
 src/
@@ -209,7 +224,7 @@ scripts/               db.ts (migration runner), seed.ts
 
 ---
 
-## 9. Deployment (GitHub + Vercel)
+## 10. Deployment (GitHub + Vercel)
 
 1. Push to GitHub:
    ```bash
@@ -229,7 +244,7 @@ scripts/               db.ts (migration runner), seed.ts
 
 ---
 
-## 10. Updating production
+## 11. Updating production
 
 ```bash
 # edit code
@@ -241,7 +256,7 @@ Installed PWA users get an **Update Now** banner on their next visit.
 
 ---
 
-## 11. Custom domain
+## 12. Custom domain
 
 To serve the app from e.g. `services.elroi.com`:
 
@@ -257,7 +272,7 @@ the environment variables.
 
 ---
 
-## 12. Debugging guide
+## 13. Debugging guide
 
 The app is structured so you can trace one action through every layer:
 
@@ -290,7 +305,7 @@ SUPABASE API → RLS → POSTGRESQL → RESPONSE → UPDATED UI
 
 ---
 
-## 13. Acceptance checklist
+## 14. Acceptance checklist
 
 - [ ] Client can register (name, email, phone), log in, log out
 - [ ] Client picks a cleaning package, toggles materials, sees the price change instantly
@@ -307,7 +322,7 @@ SUPABASE API → RLS → POSTGRESQL → RESPONSE → UPDATED UI
 
 ---
 
-## 14. Phase 2 (not in this version)
+## 15. Phase 2 (not in this version)
 
 Live GPS tracking, Mobile Money / Paystack integration, WhatsApp & SMS
 notifications, reviews, discount codes, payroll, PDF invoices, multi-branch.
