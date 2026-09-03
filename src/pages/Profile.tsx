@@ -3,7 +3,7 @@ import { PageHeader } from '../components/common/PageHeader'
 import { useToast } from '../components/common/Toast'
 import { useAuth } from '../hooks/useAuth'
 import { updateProfile } from '../services/profiles'
-import { ROLE_LABELS } from '../constants'
+import { displayRole } from '../constants'
 import { formatDate } from '../utils/format'
 import { isValidPhone } from '../utils/validation'
 
@@ -89,7 +89,9 @@ export function Profile() {
           </div>
           <div>
             <p className="font-medium text-gray-700">Role</p>
-            <p className="text-gray-500">{ROLE_LABELS[profile.role]}</p>
+            <p className="text-gray-500">
+              {displayRole(profile.role, profile.email)}
+            </p>
           </div>
           <div>
             <p className="font-medium text-gray-700">Member since</p>

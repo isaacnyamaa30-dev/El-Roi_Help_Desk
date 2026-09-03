@@ -31,7 +31,16 @@ const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
 
-const DEMO_PASSWORD = 'ElRoi#Demo2024'
+const DEMO_PASSWORD = 'ElRoi-Demo-2026!'
+
+/** The business owner / super admin. Password is set separately (never a
+ *  shared demo password). */
+export const OWNER = {
+  email: 'isaacnyamaa30@gmail.com',
+  full_name: 'Isaac Nyamaa Boadi',
+  phone: '+233243744689',
+  role: 'admin',
+} as const
 
 const DEMO_USERS = [
   { email: 'admin@elroi.test',    full_name: 'System Administrator', phone: '+233201110001', role: 'admin' },
@@ -115,6 +124,24 @@ async function ensureUsers() {
     })
     if (error) throw error
     console.log(`  ✓ ${u.role.padEnd(8)} ${u.email}`)
+  }
+
+  // Ensure the owner exists as an admin. Never touch their password here.
+  const ownerId = byEmail.get(OWNER.email)
+  if (ownerId) {
+    await admin.from('profiles').upsert({
+      id: ownerId,
+      full_name: OWNER.full_name,
+      email: OWNER.email,
+      phone: OWNER.phone,
+      role: 'admin',
+      is_active: true,
+    })
+    console.log(`  ✓ owner    ${OWNER.email} (admin)`)
+  } else {
+    console.log(
+      `  ! owner ${OWNER.email} has no account yet — create it via the app or Supabase, it will be promoted to admin on the next seed`,
+    )
   }
 }
 

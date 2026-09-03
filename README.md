@@ -132,7 +132,7 @@ bookings covering every status, plus payments and history.
 > **Demo credentials are for local / classroom use only. Never use them in
 > production.**
 
-Password for **every** demo account: `ElRoi#Demo2024`
+Password for **every** demo account: `ElRoi-Demo-2026!`
 
 | Email | Role | Name |
 | --- | --- | --- |
@@ -141,6 +141,13 @@ Password for **every** demo account: `ElRoi#Demo2024`
 | `cleaner1@elroi.test` … `cleaner3@elroi.test` | cleaner | Ama Mensah, Akosua Owusu, Grace Asare |
 | `driver1@elroi.test` … `driver3@elroi.test` | driver | Kwame Boateng, Kofi Mensah, Yaw Asare |
 | `client1@elroi.test` … `client5@elroi.test` | client | Daniel Owusu, Akua Frimpong, Samuel Osei, Abena Sarpong, Yaw Darko |
+
+**Owner / Super Admin:** `isaacnyamaa30@gmail.com` (Isaac Nyamaa Boadi) —
+role `admin`, shown as **Super Admin** in the app. Its password is **not** the
+shared demo password; it was set separately during provisioning. Use
+"forgot password" or reset it in Supabase → Authentication if you need it.
+`npm run seed` never changes the owner's password — it only ensures the
+account stays an `admin`.
 
 ### Cleaning prices (editable later by an admin at `/admin/prices`)
 

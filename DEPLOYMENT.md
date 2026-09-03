@@ -47,7 +47,7 @@ only. Rename them in the GitHub and Vercel dashboards if you like.)_
 
 ## Demo accounts
 
-Password for every account: `ElRoi#Demo2024`
+Password for every **demo** account: `ElRoi-Demo-2026!`
 
 | Email | Role |
 | --- | --- |
@@ -56,6 +56,10 @@ Password for every account: `ElRoi#Demo2024`
 | `cleaner1@elroi.test` … `cleaner3@elroi.test` | cleaner |
 | `driver1@elroi.test` … `driver3@elroi.test` | driver |
 | `client1@elroi.test` … `client5@elroi.test` | client |
+
+**Owner / Super Admin:** `isaacnyamaa30@gmail.com` — role `admin`, its own
+password (set at provisioning, given to you separately). The seed keeps this
+account an admin but never touches its password.
 
 > Demo credentials are for classroom use only.
 

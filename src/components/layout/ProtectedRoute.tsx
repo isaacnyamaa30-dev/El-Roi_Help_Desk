@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { LoadingSpinner } from '../common/LoadingSpinner'
+import { homeForRole } from './navConfig'
 import type { Role } from '../../constants'
 import type { ReactNode } from 'react'
 
@@ -25,8 +26,9 @@ export function ProtectedRoute({
   if (!session)
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
 
+  // Wrong role for this area → send the user to their own home.
   if (allow && role && !allow.includes(role))
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={homeForRole(role)} replace />
 
   return <>{children}</>
 }

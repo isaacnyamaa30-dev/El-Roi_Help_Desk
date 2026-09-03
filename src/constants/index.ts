@@ -10,8 +10,9 @@ export const APP_TAGLINE = 'Book. Track. Serve.'
 export const APP_TAGLINE_SECONDARY =
   'Professional weekend cleaning and driving services made simple.'
 
-/** Developer and copyright owner. */
+/** Developer, copyright owner and super admin of this deployment. */
 export const APP_AUTHOR = 'Isaac Nyamaa Boadi'
+export const APP_OWNER_EMAIL = 'isaacnyamaa30@gmail.com'
 
 /** e.g. "© 2026 Isaac Nyamaa Boadi. All Rights Reserved." */
 export const APP_COPYRIGHT = `© ${new Date().getFullYear()} ${APP_AUTHOR}. All Rights Reserved.`
@@ -43,6 +44,15 @@ export const ROLE_LABELS: Record<Role, string> = {
   driver: 'Driver',
   manager: 'Manager',
   admin: 'Administrator',
+}
+
+/** Label for a person — the owner shows as "Super Admin". */
+export function displayRole(
+  role: Role | null,
+  email?: string | null,
+): string {
+  if (role === ROLES.ADMIN && email === APP_OWNER_EMAIL) return 'Super Admin'
+  return role ? ROLE_LABELS[role] : ''
 }
 
 /** Manager + admin: can see and manage everything. */
@@ -85,6 +95,14 @@ export const PRICING_TYPE_LABELS: Record<PricingType, string> = {
   package: 'Per package',
   quote: 'Request a quote',
 }
+
+export const PRICING_TYPE_OPTIONS: PricingType[] = [
+  PRICING_TYPE.PACKAGE,
+  PRICING_TYPE.FIXED,
+  PRICING_TYPE.HOURLY,
+  PRICING_TYPE.DAILY,
+  PRICING_TYPE.QUOTE,
+]
 
 /** Cleaning material options — these become `service_prices.pricing_option`. */
 export const MATERIAL_OPTION = {

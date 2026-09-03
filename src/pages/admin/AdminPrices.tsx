@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { PageHeader } from '../../components/common/PageHeader'
 import { LoadingSpinner } from '../../components/common/LoadingSpinner'
 import { useToast } from '../../components/common/Toast'
-import { listAllServices, updatePriceAmount } from '../../services/catalogue'
+import {
+  listAllServices,
+  updatePriceAmount,
+  upsertPrice,
+} from '../../services/catalogue'
 import {
   MATERIAL_OPTION_LABELS,
   type MaterialOption,
@@ -27,6 +31,8 @@ export function AdminPrices() {
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
   const [saving, setSaving] = useState(false)
+  const [adding, setAdding] = useState<string | null>(null)
+  const [newRow, setNewRow] = useState({ option: '', amount: '', packageId: '' })
 
   function load() {
     setLoading(true)
@@ -52,6 +58,31 @@ export function AdminPrices() {
     } catch (err) {
       console.error('[EL-ROI] Price update failed:', err)
       notify('Could not update the price.', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function addPrice(service: ServiceWithDetails) {
+    const value = Number(newRow.amount)
+    if (!value || value <= 0) return notify('Enter a valid amount.', 'error')
+    setSaving(true)
+    try {
+      await upsertPrice({
+        service_id: service.id,
+        package_id: newRow.packageId || null,
+        pricing_option: newRow.option.trim() || null,
+        amount: value,
+        requires_quote: false,
+        active: true,
+      })
+      notify('Price added.', 'success')
+      setAdding(null)
+      setNewRow({ option: '', amount: '', packageId: '' })
+      load()
+    } catch (err) {
+      console.error('[EL-ROI] Add price failed:', err)
+      notify('Could not add the price (one may already exist for that option).', 'error')
     } finally {
       setSaving(false)
     }
@@ -98,11 +129,12 @@ export function AdminPrices() {
                     </span>
                   </div>
 
-                  {service.prices.length === 0 ? (
+                  {service.prices.length === 0 && (
                     <p className="mt-2 text-sm text-gold-dark">
                       Request Quote — no fixed price set.
                     </p>
-                  ) : (
+                  )}
+                  {service.prices.length > 0 && (
                     <ul className="mt-2 divide-y divide-gray-100 text-sm">
                       {service.prices.map((price) => (
                         <li
@@ -156,6 +188,75 @@ export function AdminPrices() {
                         </li>
                       ))}
                     </ul>
+                  )}
+
+                  {adding === service.id ? (
+                    <div className="mt-3 flex flex-wrap items-end gap-2 rounded-md bg-gray-50 p-3 text-sm">
+                      {service.packages.length > 0 && (
+                        <label>
+                          Package
+                          <select
+                            className="mt-1 block rounded-md border border-gray-300 px-2 py-1 text-sm"
+                            value={newRow.packageId}
+                            onChange={(e) =>
+                              setNewRow({ ...newRow, packageId: e.target.value })
+                            }
+                          >
+                            <option value="">—</option>
+                            {service.packages.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                      <label>
+                        Option label
+                        <input
+                          className="mt-1 block w-36 rounded-md border border-gray-300 px-2 py-1 text-sm"
+                          placeholder="standard"
+                          value={newRow.option}
+                          onChange={(e) =>
+                            setNewRow({ ...newRow, option: e.target.value })
+                          }
+                        />
+                      </label>
+                      <label>
+                        Amount (GH₵)
+                        <input
+                          type="number"
+                          className="mt-1 block w-28 rounded-md border border-gray-300 px-2 py-1 text-sm"
+                          value={newRow.amount}
+                          onChange={(e) =>
+                            setNewRow({ ...newRow, amount: e.target.value })
+                          }
+                        />
+                      </label>
+                      <button
+                        onClick={() => addPrice(service)}
+                        disabled={saving}
+                        className="rounded-md bg-green px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-dark disabled:opacity-60"
+                      >
+                        Save price
+                      </button>
+                      <button
+                        onClick={() => setAdding(null)}
+                        className="text-xs text-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setAdding(service.id)
+                        setNewRow({ option: '', amount: '', packageId: '' })
+                      }}
+                      className="mt-3 text-xs font-medium text-royal hover:underline"
+                    >
+                      + Add a price
+                    </button>
                   )}
                 </div>
               ))}
