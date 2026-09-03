@@ -80,14 +80,17 @@ async function ensureUsers() {
   const existing = await listAllUsers()
   const byEmail = new Map(existing.map((u) => [u.email, u.id]))
 
-  // Remove legacy help-desk demo accounts.
+  // Remove legacy help-desk demo accounts (auth user + any orphan profile;
+  // Supabase does not always cascade the profile row).
   for (const email of LEGACY_EMAILS) {
     const id = byEmail.get(email)
-    if (id) {
-      await admin.auth.admin.deleteUser(id).catch(() => {})
-      console.log(`  – removed legacy ${email}`)
-    }
+    if (id) await admin.auth.admin.deleteUser(id).catch(() => {})
   }
+  const { count } = await admin
+    .from('profiles')
+    .delete({ count: 'exact' })
+    .in('email', LEGACY_EMAILS)
+  if (count) console.log(`  – removed ${count} legacy demo profile(s)`)
 
   for (const u of DEMO_USERS) {
     let userId = byEmail.get(u.email)
