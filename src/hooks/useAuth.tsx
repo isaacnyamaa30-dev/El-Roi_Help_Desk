@@ -10,7 +10,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { getProfile } from '../services/profiles'
 import { signOut as apiSignOut } from '../services/auth'
-import { ROLES, STAFF_ROLES, type Role } from '../constants'
+import { STAFF_ROLES, WORKER_ROLES, type Role } from '../constants'
 import type { Profile } from '../types'
 
 interface AuthState {
@@ -18,8 +18,10 @@ interface AuthState {
   profile: Profile | null
   loading: boolean
   role: Role | null
+  /** Manager or admin. */
   isStaff: boolean
-  isAgent: boolean
+  /** Cleaner or driver. */
+  isWorker: boolean
   refreshProfile: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -65,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       role,
       isStaff: role ? STAFF_ROLES.includes(role) : false,
-      isAgent: role === ROLES.AGENT,
+      isWorker: role ? WORKER_ROLES.includes(role) : false,
       refreshProfile: async () => {
         if (session?.user) await loadProfile(session.user.id)
       },

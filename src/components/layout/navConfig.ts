@@ -6,46 +6,54 @@ export interface NavItem {
   end?: boolean
 }
 
-const USER_NAV: NavItem[] = [
+const CLIENT_NAV: NavItem[] = [
   { label: 'Dashboard', to: '/dashboard', end: true },
-  { label: 'Create Ticket', to: '/tickets/new' },
-  { label: 'My Tickets', to: '/tickets', end: true },
-  { label: 'Profile', to: '/profile' },
-]
-
-const AGENT_NAV: NavItem[] = [
-  { label: 'Dashboard', to: '/agent', end: true },
-  { label: 'Assigned Tickets', to: '/agent/tickets' },
+  { label: 'Book Service', to: '/book' },
+  { label: 'My Bookings', to: '/bookings', end: true },
+  { label: 'Payments', to: '/payments' },
   { label: 'Profile', to: '/profile' },
 ]
 
 const STAFF_NAV: NavItem[] = [
+  { label: 'Dashboard', to: '/staff', end: true },
+  { label: 'My Jobs', to: '/staff/jobs' },
+  { label: 'Completed Jobs', to: '/staff/history' },
+  { label: 'Profile', to: '/staff/profile' },
+]
+
+const ADMIN_NAV: NavItem[] = [
   { label: 'Dashboard', to: '/admin', end: true },
-  { label: 'All Tickets', to: '/admin/tickets', end: true },
-  { label: 'Unassigned', to: '/admin/tickets/unassigned' },
-  { label: 'Agents', to: '/admin/agents' },
-  { label: 'Users', to: '/admin/users' },
+  { label: 'Bookings', to: '/admin/bookings', end: true },
+  { label: 'Calendar', to: '/admin/calendar' },
+  { label: 'Services', to: '/admin/services' },
+  { label: 'Prices', to: '/admin/prices' },
+  { label: 'Clients', to: '/admin/clients' },
+  { label: 'Staff', to: '/admin/staff' },
+  { label: 'Payments', to: '/admin/payments' },
   { label: 'Reports', to: '/admin/reports' },
+  { label: 'Settings', to: '/admin/settings' },
   { label: 'Profile', to: '/profile' },
 ]
 
 export function navForRole(role: Role | null): NavItem[] {
   switch (role) {
-    case ROLES.AGENT:
-      return AGENT_NAV
+    case ROLES.CLEANER:
+    case ROLES.DRIVER:
+      return STAFF_NAV
     case ROLES.MANAGER:
     case ROLES.ADMIN:
-      return STAFF_NAV
+      return ADMIN_NAV
     default:
-      return USER_NAV
+      return CLIENT_NAV
   }
 }
 
 /** Where each role lands after login. */
 export function homeForRole(role: Role | null): string {
   switch (role) {
-    case ROLES.AGENT:
-      return '/agent'
+    case ROLES.CLEANER:
+    case ROLES.DRIVER:
+      return '/staff'
     case ROLES.MANAGER:
     case ROLES.ADMIN:
       return '/admin'

@@ -93,7 +93,7 @@ export function AppShell() {
           </button>
           <div>
             <p className="font-display text-sm font-bold uppercase leading-tight tracking-wide sm:text-base">
-              EL-ROI <span className="text-gold">Help Desk</span>
+              EL-ROI <span className="text-gold">Services</span>
             </p>
             <p className="hidden text-xs text-blue-100/70 sm:block">
               {APP_TAGLINE}

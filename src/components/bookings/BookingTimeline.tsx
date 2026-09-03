@@ -1,18 +1,31 @@
 import { HISTORY_ACTION_LABELS } from '../../constants'
 import { formatDateTime } from '../../utils/format'
-import type { TicketHistoryEntry } from '../../types'
+import type { BookingHistoryEntry } from '../../types'
 
-function describe(entry: TicketHistoryEntry): string {
+function describe(entry: BookingHistoryEntry): string {
   const label = HISTORY_ACTION_LABELS[entry.action] ?? entry.action
-  if (entry.old_value && entry.new_value)
+  if (entry.action === 'status_changed' && entry.old_value && entry.new_value)
+    return `${label}: ${labelize(entry.old_value)} → ${labelize(entry.new_value)}`
+  if (entry.action === 'booking_assigned' || entry.action === 'booking_reassigned')
+    return `${label}: ${entry.new_value}`
+  if (entry.action === 'price_changed')
     return `${label}: ${entry.old_value} → ${entry.new_value}`
-  if (entry.new_value) return `${label} (${entry.new_value})`
+  if (entry.action === 'payment_recorded')
+    return `${label}: GH₵${entry.new_value}`
   return label
 }
 
-export function TicketHistory({ entries }: { entries: TicketHistoryEntry[] }) {
+function labelize(s: string): string {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+export function BookingTimeline({
+  entries,
+}: {
+  entries: BookingHistoryEntry[]
+}) {
   if (entries.length === 0)
-    return <p className="text-sm text-gray-500">No history yet.</p>
+    return <p className="text-sm text-gray-500">No activity yet.</p>
 
   return (
     <ol className="space-y-3">

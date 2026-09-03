@@ -1,18 +1,16 @@
 /* eslint-disable no-console */
 /**
- * EL-ROI Help Desk Tracker — database seed script.
+ * EL-ROI Services — database seed.
  *
- * Run locally only. Requires the Supabase SERVICE ROLE key, which must
- * NEVER be exposed to the browser or committed to git.
+ * Run locally only. Requires the Supabase SERVICE ROLE key, which must never
+ * be exposed to the browser or committed to git.
  *
- *   npm run seed          # seed only if the tickets table is empty
- *   npm run seed -- --reset   # wipe tickets/messages/history first, then seed
+ *   npm run seed              # seed users + catalogue; bookings only if empty
+ *   npm run seed -- --reset   # also wipe and re-create bookings + payments
  *
- * What it creates:
- *   - 1 admin, 1 manager, 3 agents, 3 users (Supabase Auth + profiles)
- *   - 12 tickets covering every status and priority
- *   - realistic conversations on several tickets
- *   - ticket history entries for assignment + status changes
+ * Creates: 1 admin, 1 manager, 3 cleaners, 3 drivers, 5 clients; the cleaning
+ * and driving catalogue with the real cleaning prices; and 20+ bookings that
+ * cover every status, plus payments and history.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -24,399 +22,420 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error(
-    '\nMissing env vars. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY ' +
-      'in your .env file (see .env.example).\n',
-  )
+  console.error('\nMissing VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.\n')
   process.exit(1)
 }
 
 const reset = process.argv.includes('--reset')
-
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
 
-/* ----------------------------------------------------------------- demo users
- * Development-only passwords. Documented in the README demo section.
- * DO NOT use these anywhere near production.
- */
 const DEMO_PASSWORD = 'ElRoi#Demo2024'
 
 const DEMO_USERS = [
-  { email: 'admin@elroi.test',   full_name: 'System Administrator', role: 'admin' },
-  { email: 'manager@elroi.test', full_name: 'Help Desk Manager',    role: 'manager' },
-  { email: 'agent1@elroi.test',  full_name: 'Kwame Mensah',         role: 'agent' },
-  { email: 'agent2@elroi.test',  full_name: 'Ama Boateng',          role: 'agent' },
-  { email: 'agent3@elroi.test',  full_name: 'Kojo Asare',           role: 'agent' },
-  { email: 'user1@elroi.test',   full_name: 'Daniel Owusu',         role: 'user' },
-  { email: 'user2@elroi.test',   full_name: 'Akosua Frimpong',      role: 'user' },
-  { email: 'user3@elroi.test',   full_name: 'Samuel Osei',          role: 'user' },
+  { email: 'admin@elroi.test',    full_name: 'System Administrator', phone: '+233201110001', role: 'admin' },
+  { email: 'manager@elroi.test',  full_name: 'Service Manager',      phone: '+233201110002', role: 'manager' },
+  { email: 'cleaner1@elroi.test', full_name: 'Ama Mensah',           phone: '+233201110011', role: 'cleaner' },
+  { email: 'cleaner2@elroi.test', full_name: 'Akosua Owusu',         phone: '+233201110012', role: 'cleaner' },
+  { email: 'cleaner3@elroi.test', full_name: 'Grace Asare',          phone: '+233201110013', role: 'cleaner' },
+  { email: 'driver1@elroi.test',  full_name: 'Kwame Boateng',        phone: '+233201110021', role: 'driver' },
+  { email: 'driver2@elroi.test',  full_name: 'Kofi Mensah',          phone: '+233201110022', role: 'driver' },
+  { email: 'driver3@elroi.test',  full_name: 'Yaw Asare',            phone: '+233201110023', role: 'driver' },
+  { email: 'client1@elroi.test',  full_name: 'Daniel Owusu',         phone: '+233241110031', role: 'client' },
+  { email: 'client2@elroi.test',  full_name: 'Akua Frimpong',        phone: '+233241110032', role: 'client' },
+  { email: 'client3@elroi.test',  full_name: 'Samuel Osei',          phone: '+233241110033', role: 'client' },
+  { email: 'client4@elroi.test',  full_name: 'Abena Sarpong',        phone: '+233241110034', role: 'client' },
+  { email: 'client5@elroi.test',  full_name: 'Yaw Darko',            phone: '+233241110035', role: 'client' },
 ] as const
 
-type DemoEmail = (typeof DEMO_USERS)[number]['email']
-
+type Email = (typeof DEMO_USERS)[number]['email']
 const ids: Record<string, string> = {}
 
-async function ensureUser(u: (typeof DEMO_USERS)[number]) {
-  // Try to create; if the address is taken, look the user up instead.
-  const { data, error } = await admin.auth.admin.createUser({
-    email: u.email,
-    password: DEMO_PASSWORD,
-    email_confirm: true,
-    user_metadata: { full_name: u.full_name },
-  })
+/** Old help-desk demo accounts that should not linger in the new app. */
+const LEGACY_EMAILS = [
+  'agent1@elroi.test',
+  'agent2@elroi.test',
+  'agent3@elroi.test',
+  'user1@elroi.test',
+  'user2@elroi.test',
+  'user3@elroi.test',
+]
 
-  let userId = data?.user?.id
+async function listAllUsers() {
+  const all: { id: string; email?: string }[] = []
+  for (let page = 1; page <= 20; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    })
+    if (error) throw error
+    all.push(...data.users.map((u) => ({ id: u.id, email: u.email })))
+    if (data.users.length < 200) break
+  }
+  return all
+}
 
-  if (error) {
-    if (!/already/i.test(error.message)) throw error
-    // paginate through existing users to find this email
-    for (let page = 1; page <= 20 && !userId; page++) {
-      const { data: list, error: listErr } =
-        await admin.auth.admin.listUsers({ page, perPage: 200 })
-      if (listErr) throw listErr
-      userId = list.users.find((x) => x.email === u.email)?.id
-      if (list.users.length < 200) break
+async function ensureUsers() {
+  const existing = await listAllUsers()
+  const byEmail = new Map(existing.map((u) => [u.email, u.id]))
+
+  // Remove legacy help-desk demo accounts.
+  for (const email of LEGACY_EMAILS) {
+    const id = byEmail.get(email)
+    if (id) {
+      await admin.auth.admin.deleteUser(id).catch(() => {})
+      console.log(`  – removed legacy ${email}`)
     }
   }
 
-  if (!userId) throw new Error(`Could not resolve user id for ${u.email}`)
-  ids[u.email] = userId
-
-  // The signup trigger creates the profile as role 'user'; upsert the
-  // real role + name here (service role bypasses the role-change guard).
-  const { error: upErr } = await admin.from('profiles').upsert({
-    id: userId,
-    full_name: u.full_name,
-    email: u.email,
-    role: u.role,
-    is_active: true,
-  })
-  if (upErr) throw upErr
-
-  console.log(`  ✓ ${u.role.padEnd(8)} ${u.email}`)
+  for (const u of DEMO_USERS) {
+    let userId = byEmail.get(u.email)
+    if (!userId) {
+      const { data, error } = await admin.auth.admin.createUser({
+        email: u.email,
+        password: DEMO_PASSWORD,
+        email_confirm: true,
+        user_metadata: { full_name: u.full_name, phone: u.phone },
+      })
+      if (error) throw error
+      userId = data.user!.id
+    }
+    ids[u.email] = userId
+    const { error } = await admin.from('profiles').upsert({
+      id: userId,
+      full_name: u.full_name,
+      email: u.email,
+      phone: u.phone,
+      role: u.role,
+      is_active: true,
+    })
+    if (error) throw error
+    console.log(`  ✓ ${u.role.padEnd(8)} ${u.email}`)
+  }
 }
 
-/* --------------------------------------------------------------------- tickets */
+/* ----------------------------------------------------------------- catalogue */
 
-interface SeedTicket {
-  title: string
-  description: string
-  category: string
-  priority: 'low' | 'medium' | 'high' | 'urgent'
-  status:
-    | 'open'
-    | 'assigned'
-    | 'in_progress'
-    | 'waiting_for_user'
-    | 'resolved'
-    | 'closed'
-    | 'reopened'
-  createdBy: DemoEmail
-  assignedTo?: DemoEmail
-  daysAgo: number
-  conversation?: { from: DemoEmail; message: string }[]
+async function seedCatalogue(fresh: boolean) {
+  const { data: cats } = await admin.from('service_categories').select('id, slug')
+  const catId = Object.fromEntries((cats ?? []).map((c) => [c.slug, c.id]))
+
+  if (fresh) {
+    // Bookings are already wiped at this point, so prices/packages are safe
+    // to rebuild cleanly.
+    await admin.from('service_prices').delete().not('id', 'is', null)
+    await admin.from('service_packages').delete().not('id', 'is', null)
+  }
+
+  const cleaning = [
+    { name: '2-Bedroom Cleaning', slug: '2-bed-cleaning', pricing_type: 'package', order: 1,
+      packages: ['2 Bedroom'],
+      prices: [{ opt: 'elroi_materials', amt: 650 }, { opt: 'client_materials', amt: 500 }],
+      desc: 'Full cleaning of a 2-bedroom home.' },
+    { name: '3-Bedroom Cleaning', slug: '3-bed-cleaning', pricing_type: 'package', order: 2,
+      packages: ['3 Bedroom'],
+      prices: [{ opt: 'elroi_materials', amt: 1000 }, { opt: 'client_materials', amt: 700 }],
+      desc: 'Full cleaning of a 3-bedroom home.' },
+    { name: '4-Bedroom Cleaning', slug: '4-bed-cleaning', pricing_type: 'package', order: 3,
+      packages: ['4 Bedroom'],
+      prices: [{ opt: 'elroi_materials', amt: 1300 }, { opt: 'client_materials', amt: 1000 }],
+      desc: 'Full cleaning of a 4-bedroom home.' },
+    { name: 'Office Cleaning', slug: 'office-cleaning', pricing_type: 'quote', order: 4,
+      requires_quote: true, packages: [], prices: [],
+      desc: 'Weekend office cleaning — request a quote.' },
+    { name: 'Custom / Other Cleaning', slug: 'custom-cleaning', pricing_type: 'quote', order: 5,
+      requires_quote: true, packages: [], prices: [],
+      desc: 'Anything else — tell us what you need and we will quote.' },
+  ]
+
+  const driving = [
+    'Personal Driver',
+    'Weekend Driver',
+    'Event Driver',
+    'Airport Pickup',
+    'Airport Drop-off',
+    'Intercity Driving',
+    'Vehicle Delivery',
+  ].map((name, i) => ({
+    name,
+    slug: name.toLowerCase().replace(/[^a-z]+/g, '-'),
+    pricing_type: 'quote' as const,
+    requires_quote: true,
+    order: i + 1,
+    desc: `${name} — submit a request and we will confirm the price.`,
+  }))
+
+  // ---- cleaning
+  for (const c of cleaning) {
+    const { data: svc } = await admin
+      .from('services')
+      .upsert(
+        {
+          category_id: catId.cleaning,
+          name: c.name,
+          slug: c.slug,
+          description: c.desc,
+          pricing_type: c.pricing_type,
+          requires_quote: c.requires_quote ?? false,
+          display_order: c.order,
+          active: true,
+        },
+        { onConflict: 'slug' },
+      )
+      .select()
+      .single()
+    if (!svc) continue
+
+    const pkgIds: Record<string, string> = {}
+    for (const p of c.packages) {
+      const { data: pkg, error: pkgErr } = await admin
+        .from('service_packages')
+        .upsert(
+          { service_id: svc.id, name: p, active: true },
+          { onConflict: 'service_id,name' },
+        )
+        .select('id')
+        .single()
+      if (pkgErr) throw pkgErr
+      pkgIds[p] = pkg.id
+    }
+
+    for (const p of c.prices) {
+      const packageId = c.packages.length ? pkgIds[c.packages[0]] : null
+      const { data: existing } = await admin
+        .from('service_prices')
+        .select('id')
+        .eq('service_id', svc.id)
+        .eq('pricing_option', p.opt)
+        .eq('active', true)
+        .maybeSingle()
+      if (existing) {
+        await admin
+          .from('service_prices')
+          .update({
+            amount: p.amt,
+            package_id: packageId,
+            requires_quote: false,
+          })
+          .eq('id', existing.id)
+      } else {
+        const { error: prErr } = await admin.from('service_prices').insert({
+          service_id: svc.id,
+          package_id: packageId,
+          pricing_option: p.opt,
+          amount: p.amt,
+          active: true,
+        })
+        if (prErr) throw prErr
+      }
+    }
+    console.log(`  ✓ service  ${c.name}`)
+  }
+
+  // ---- driving
+  for (const d of driving) {
+    await admin.from('services').upsert(
+      {
+        category_id: catId.driving,
+        name: d.name,
+        slug: d.slug,
+        description: d.desc,
+        pricing_type: 'quote',
+        requires_quote: true,
+        display_order: d.order,
+        active: true,
+      },
+      { onConflict: 'slug' },
+    )
+    console.log(`  ✓ service  ${d.name}`)
+  }
 }
 
-const SEED_TICKETS: SeedTicket[] = [
-  {
-    title: 'Computer cannot start',
-    description:
-      'My desktop computer will not power on this morning. No lights, no fan noise. I have checked the power cable and the wall socket works.',
-    category: 'Hardware',
-    priority: 'high',
-    status: 'in_progress',
-    createdBy: 'user1@elroi.test',
-    assignedTo: 'agent1@elroi.test',
-    daysAgo: 4,
-    conversation: [
-      { from: 'user1@elroi.test', message: 'My computer will not turn on at all this morning.' },
-      { from: 'agent1@elroi.test', message: 'Thanks for reporting. Can you try a different power cable and confirm the socket has power with another device?' },
-      { from: 'user1@elroi.test', message: 'I tried another cable and the socket works with my phone charger. Still nothing.' },
-      { from: 'agent1@elroi.test', message: 'Understood. I am logging this as a likely power supply failure and will bring a replacement unit to your desk today.' },
-    ],
-  },
-  {
-    title: 'Forgotten account password',
-    description:
-      'I cannot log in to my staff account. I tried the self-service reset but never received the reset email.',
-    category: 'Account / Login',
-    priority: 'medium',
-    status: 'resolved',
-    createdBy: 'user2@elroi.test',
-    assignedTo: 'agent2@elroi.test',
-    daysAgo: 6,
-    conversation: [
-      { from: 'user2@elroi.test', message: 'I cannot login to my account.' },
-      { from: 'agent2@elroi.test', message: 'Have you tried using the password reset option?' },
-      { from: 'user2@elroi.test', message: 'Yes, but I did not receive the reset email.' },
-      { from: 'agent2@elroi.test', message: 'I have reset the account manually. Please try logging in again.' },
-      { from: 'user2@elroi.test', message: 'It is working now. Thank you.' },
-    ],
-  },
-  {
-    title: 'Printer is not printing',
-    description:
-      'The shared printer on the second floor accepts jobs but nothing comes out. The queue shows the job as "printing" then it disappears.',
-    category: 'Printer',
-    priority: 'medium',
-    status: 'assigned',
-    createdBy: 'user3@elroi.test',
-    assignedTo: 'agent1@elroi.test',
-    daysAgo: 2,
-  },
-  {
-    title: 'Unable to connect to Wi-Fi',
-    description:
-      'My laptop cannot connect to the school Wi-Fi network. It asks for a password repeatedly even though the password is correct.',
-    category: 'Internet / Network',
-    priority: 'urgent',
-    status: 'open',
-    createdBy: 'user1@elroi.test',
-    daysAgo: 1,
-  },
-  {
-    title: 'Request to install application software',
-    description:
-      'I need the data analysis application installed on my workstation for an upcoming project. Please advise on the approval process.',
-    category: 'Software',
-    priority: 'low',
-    status: 'waiting_for_user',
-    createdBy: 'user2@elroi.test',
-    assignedTo: 'agent3@elroi.test',
-    daysAgo: 5,
-    conversation: [
-      { from: 'user2@elroi.test', message: 'Please install the data analysis application on my machine.' },
-      { from: 'agent3@elroi.test', message: 'This software requires manager approval. Could you reply with your manager’s name and the project reference so I can request sign-off?' },
-    ],
-  },
-  {
-    title: 'Email attachments will not open',
-    description:
-      'When I try to open PDF attachments from email I get an error saying the file is damaged. Colleagues can open the same files.',
-    category: 'Email',
-    priority: 'medium',
-    status: 'in_progress',
-    createdBy: 'user3@elroi.test',
-    assignedTo: 'agent2@elroi.test',
-    daysAgo: 3,
-    conversation: [
-      { from: 'user3@elroi.test', message: 'PDF attachments from email say the file is damaged when I open them.' },
-      { from: 'agent2@elroi.test', message: 'It sounds like the PDF reader association is broken. I will connect remotely this afternoon to reinstall the reader.' },
-    ],
-  },
-  {
-    title: 'Need access to shared project folder',
-    description:
-      'I have joined the Roads project team but cannot open the shared project folder on the network drive. Access is denied.',
-    category: 'Access / Permission',
-    priority: 'high',
-    status: 'resolved',
-    createdBy: 'user1@elroi.test',
-    assignedTo: 'agent3@elroi.test',
-    daysAgo: 8,
-    conversation: [
-      { from: 'user1@elroi.test', message: 'Access denied when opening the Roads project shared folder.' },
-      { from: 'agent3@elroi.test', message: 'I have added your account to the Roads project security group. Please log out and back in, then try again.' },
-      { from: 'user1@elroi.test', message: 'I can open it now. Thanks for the quick help.' },
-    ],
-  },
-  {
-    title: 'Laptop battery drains very quickly',
-    description:
-      'My work laptop battery lasts less than 30 minutes on a full charge. It is about two years old.',
-    category: 'Hardware',
-    priority: 'low',
-    status: 'closed',
-    createdBy: 'user2@elroi.test',
-    assignedTo: 'agent1@elroi.test',
-    daysAgo: 14,
-    conversation: [
-      { from: 'user2@elroi.test', message: 'Laptop battery only lasts about 30 minutes now.' },
-      { from: 'agent1@elroi.test', message: 'The battery health report shows it is at 41% of design capacity. I have ordered a replacement battery.' },
-      { from: 'agent1@elroi.test', message: 'Replacement battery fitted and tested. Holding charge normally now. Closing this ticket.' },
-    ],
-  },
-  {
-    title: 'Monitor flickering intermittently',
-    description:
-      'My second monitor flickers on and off every few minutes. Swapping the cable did not help.',
-    category: 'Hardware',
-    priority: 'medium',
-    status: 'reopened',
-    createdBy: 'user3@elroi.test',
-    assignedTo: 'agent1@elroi.test',
-    daysAgo: 10,
-    conversation: [
-      { from: 'user3@elroi.test', message: 'Second monitor keeps flickering.' },
-      { from: 'agent1@elroi.test', message: 'Replaced the display cable and updated the graphics driver. Please monitor for a day.' },
-      { from: 'user3@elroi.test', message: 'It was fine for a day but the flickering has come back. Reopening this.' },
-    ],
-  },
-  {
-    title: 'VPN disconnects every few minutes',
-    description:
-      'When working from home the VPN drops the connection roughly every five minutes and I have to reconnect manually.',
-    category: 'Internet / Network',
-    priority: 'high',
-    status: 'in_progress',
-    createdBy: 'user1@elroi.test',
-    assignedTo: 'agent2@elroi.test',
-    daysAgo: 2,
-    conversation: [
-      { from: 'user1@elroi.test', message: 'VPN keeps dropping about every five minutes from home.' },
-      { from: 'agent2@elroi.test', message: 'Please send a screenshot of the VPN client log next time it drops so we can see the disconnect reason.' },
-    ],
-  },
-  {
-    title: 'New starter needs an email account',
-    description:
-      'We have a new team member starting Monday who needs an email account and standard software set up.',
-    category: 'Account / Login',
-    priority: 'medium',
-    status: 'assigned',
-    createdBy: 'user2@elroi.test',
-    assignedTo: 'agent3@elroi.test',
-    daysAgo: 1,
-  },
-  {
-    title: 'Keyboard keys not responding',
-    description:
-      'Several keys on my keyboard (E, R and the spacebar) only work if pressed very hard. It is slowing me down a lot.',
-    category: 'Hardware',
-    priority: 'medium',
-    status: 'open',
-    createdBy: 'user3@elroi.test',
-    daysAgo: 0,
-  },
+/* ----------------------------------------------------------------- bookings */
+
+interface SeedBooking {
+  client: Email
+  serviceSlug: string
+  packageName?: string
+  option?: 'elroi_materials' | 'client_materials'
+  amount: number | null
+  status: string
+  staff?: Email
+  daysFromNow: number
+  time: string
+  location: string
+  paid?: number
+  notes?: string
+}
+
+const KUMASI = [
+  'Kwadaso, Kumasi',
+  'Ahodwo, Kumasi',
+  'Nhyiaeso, Kumasi',
+  'Asokwa, Kumasi',
+  'Bomso, Kumasi',
+  'Patasi, Kumasi',
 ]
 
-async function wipe() {
-  console.log('  Wiping existing tickets (cascades to messages + history)...')
-  const { error } = await admin
-    .from('tickets')
-    .delete()
-    .not('id', 'is', null)
+const SEED_BOOKINGS: SeedBooking[] = [
+  { client: 'client1@elroi.test', serviceSlug: '3-bed-cleaning', packageName: '3 Bedroom', option: 'elroi_materials', amount: 1000, status: 'completed', staff: 'cleaner1@elroi.test', daysFromNow: -7, time: '10:00', location: KUMASI[0], paid: 1000, notes: 'Service completed successfully. Kitchen and bathrooms deep-cleaned.' },
+  { client: 'client2@elroi.test', serviceSlug: '2-bed-cleaning', packageName: '2 Bedroom', option: 'client_materials', amount: 500, status: 'completed', staff: 'cleaner2@elroi.test', daysFromNow: -6, time: '09:00', location: KUMASI[1], paid: 500 },
+  { client: 'client3@elroi.test', serviceSlug: '4-bed-cleaning', packageName: '4 Bedroom', option: 'elroi_materials', amount: 1300, status: 'completed', staff: 'cleaner3@elroi.test', daysFromNow: -6, time: '11:00', location: KUMASI[2], paid: 800 },
+  { client: 'client4@elroi.test', serviceSlug: 'airport-pickup', amount: null, status: 'completed', staff: 'driver1@elroi.test', daysFromNow: -5, time: '14:00', location: 'Kumasi Airport', paid: 300, notes: 'Client picked up on time.' },
+  { client: 'client1@elroi.test', serviceSlug: 'weekend-driver', amount: null, status: 'completed', staff: 'driver2@elroi.test', daysFromNow: -1, time: '08:00', location: KUMASI[3] },
+  { client: 'client5@elroi.test', serviceSlug: '3-bed-cleaning', packageName: '3 Bedroom', option: 'client_materials', amount: 700, status: 'awaiting_payment', staff: 'cleaner1@elroi.test', daysFromNow: 0, time: '10:00', location: KUMASI[4] },
+  { client: 'client2@elroi.test', serviceSlug: '2-bed-cleaning', packageName: '2 Bedroom', option: 'elroi_materials', amount: 650, status: 'in_progress', staff: 'cleaner2@elroi.test', daysFromNow: 0, time: '09:00', location: KUMASI[5] },
+  { client: 'client3@elroi.test', serviceSlug: 'personal-driver', amount: null, status: 'in_progress', staff: 'driver1@elroi.test', daysFromNow: 0, time: '12:00', location: KUMASI[0] },
+  { client: 'client4@elroi.test', serviceSlug: '3-bed-cleaning', packageName: '3 Bedroom', option: 'elroi_materials', amount: 1000, status: 'on_the_way', staff: 'cleaner3@elroi.test', daysFromNow: 0, time: '13:00', location: KUMASI[1] },
+  { client: 'client5@elroi.test', serviceSlug: 'event-driver', amount: null, status: 'on_the_way', staff: 'driver3@elroi.test', daysFromNow: 0, time: '16:00', location: KUMASI[2] },
+  { client: 'client1@elroi.test', serviceSlug: '4-bed-cleaning', packageName: '4 Bedroom', option: 'client_materials', amount: 1000, status: 'assigned', staff: 'cleaner1@elroi.test', daysFromNow: 1, time: '10:00', location: KUMASI[3] },
+  { client: 'client2@elroi.test', serviceSlug: 'airport-drop-off', amount: null, status: 'assigned', staff: 'driver2@elroi.test', daysFromNow: 1, time: '06:00', location: KUMASI[4] },
+  { client: 'client3@elroi.test', serviceSlug: '2-bed-cleaning', packageName: '2 Bedroom', option: 'elroi_materials', amount: 650, status: 'confirmed', daysFromNow: 1, time: '11:00', location: KUMASI[5] },
+  { client: 'client4@elroi.test', serviceSlug: 'weekend-driver', amount: null, status: 'confirmed', daysFromNow: 2, time: '08:00', location: KUMASI[0] },
+  { client: 'client5@elroi.test', serviceSlug: '3-bed-cleaning', packageName: '3 Bedroom', option: 'elroi_materials', amount: 1000, status: 'pending', daysFromNow: 2, time: '09:00', location: KUMASI[1] },
+  { client: 'client1@elroi.test', serviceSlug: 'intercity-driving', amount: null, status: 'pending', daysFromNow: 3, time: '07:00', location: 'Kumasi to Accra' },
+  { client: 'client2@elroi.test', serviceSlug: 'office-cleaning', amount: null, status: 'pending', daysFromNow: 3, time: '15:00', location: 'Adum, Kumasi' },
+  { client: 'client3@elroi.test', serviceSlug: '4-bed-cleaning', packageName: '4 Bedroom', option: 'elroi_materials', amount: 1300, status: 'pending', daysFromNow: 4, time: '10:00', location: KUMASI[2] },
+  { client: 'client4@elroi.test', serviceSlug: 'personal-driver', amount: null, status: 'cancelled', daysFromNow: 5, time: '09:00', location: KUMASI[3] },
+  { client: 'client5@elroi.test', serviceSlug: 'vehicle-delivery', amount: null, status: 'rejected', daysFromNow: 5, time: '10:00', location: KUMASI[4] },
+  { client: 'client1@elroi.test', serviceSlug: '2-bed-cleaning', packageName: '2 Bedroom', option: 'client_materials', amount: 500, status: 'confirmed', daysFromNow: 6, time: '12:00', location: KUMASI[5] },
+  { client: 'client2@elroi.test', serviceSlug: 'airport-pickup', amount: null, status: 'assigned', staff: 'driver1@elroi.test', daysFromNow: 6, time: '18:00', location: 'Kumasi Airport' },
+]
+
+function dateFromNow(days: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+function tsFromNow(days: number): string {
+  return new Date(Date.now() + days * 86_400_000).toISOString()
+}
+
+async function wipeBookings() {
+  console.log('  wiping existing bookings (cascades to history + payments)…')
+  const { error } = await admin.from('bookings').delete().not('id', 'is', null)
   if (error) throw error
 }
 
-async function seedTickets() {
-  for (const t of SEED_TICKETS) {
-    const createdAt = daysAgoIso(t.daysAgo)
-    const assignedTo = t.assignedTo ? ids[t.assignedTo] : null
-    const assignedAt = assignedTo ? daysAgoIso(Math.max(t.daysAgo - 1, 0)) : null
-    const resolvedAt =
-      t.status === 'resolved' || t.status === 'closed'
-        ? daysAgoIso(Math.max(t.daysAgo - 2, 0))
-        : null
-    const closedAt =
-      t.status === 'closed' ? daysAgoIso(Math.max(t.daysAgo - 1, 0)) : null
+async function seedBookings() {
+  const { data: services } = await admin
+    .from('services')
+    .select('id, slug, packages:service_packages(id, name), prices:service_prices(id, pricing_option)')
+  const svcBySlug = Object.fromEntries((services ?? []).map((s) => [s.slug, s]))
 
-    const { data: ticket, error } = await admin
-      .from('tickets')
+  for (const b of SEED_BOOKINGS) {
+    const svc = svcBySlug[b.serviceSlug]
+    if (!svc) {
+      console.warn(`  ! unknown service ${b.serviceSlug}, skipping`)
+      continue
+    }
+    const pkg = b.packageName
+      ? svc.packages?.find((p: { name: string }) => p.name === b.packageName)
+      : null
+    const price = b.option
+      ? svc.prices?.find(
+          (p: { pricing_option: string }) => p.pricing_option === b.option,
+        )
+      : null
+
+    const createdAt = tsFromNow(b.daysFromNow - 3)
+
+    const { data: booking, error } = await admin
+      .from('bookings')
       .insert({
-        title: t.title,
-        description: t.description,
-        category: t.category,
-        priority: t.priority,
-        status: t.status,
-        created_by: ids[t.createdBy],
-        assigned_to: assignedTo,
-        assigned_by: assignedTo ? ids['manager@elroi.test'] : null,
+        client_id: ids[b.client],
+        service_id: svc.id,
+        package_id: pkg?.id ?? null,
+        price_id: price?.id ?? null,
+        pricing_option: b.option ?? null,
+        service_date: dateFromNow(b.daysFromNow),
+        service_time: b.time,
+        service_location: b.location,
+        client_phone:
+          DEMO_USERS.find((u) => u.email === b.client)?.phone ?? '0240000000',
+        instructions: null,
+        status: b.status,
+        assigned_staff_id: b.staff ? ids[b.staff] : null,
+        assigned_by: b.staff ? ids['manager@elroi.test'] : null,
+        assigned_at: b.staff ? tsFromNow(b.daysFromNow - 2) : null,
+        subtotal: b.amount,
+        total_amount: b.amount,
+        completion_notes: b.notes ?? null,
+        completed_at: b.status === 'completed' ? tsFromNow(b.daysFromNow) : null,
+        cancelled_at: ['cancelled', 'rejected'].includes(b.status)
+          ? tsFromNow(b.daysFromNow - 1)
+          : null,
         created_at: createdAt,
         updated_at: createdAt,
-        assigned_at: assignedAt,
-        resolved_at: resolvedAt,
-        closed_at: closedAt,
       })
       .select()
       .single()
     if (error) throw error
 
-    // Supplemental history: assignment + status (the insert trigger already
-    // logged 'ticket_created').
+    // supplemental history
     const history: Record<string, unknown>[] = []
-    if (assignedTo) {
+    if (b.staff) {
       history.push({
-        ticket_id: ticket.id,
-        action: 'ticket_assigned',
-        old_value: 'Unassigned',
-        new_value: DEMO_USERS.find((u) => u.email === t.assignedTo)?.full_name,
+        booking_id: booking.id,
+        action: 'booking_confirmed',
         changed_by: ids['manager@elroi.test'],
-        created_at: assignedAt,
+        created_at: tsFromNow(b.daysFromNow - 2.5),
       })
       history.push({
-        ticket_id: ticket.id,
-        action: 'status_changed',
-        old_value: 'open',
-        new_value: 'assigned',
+        booking_id: booking.id,
+        action: 'booking_assigned',
+        new_value: DEMO_USERS.find((u) => u.email === b.staff)?.full_name,
         changed_by: ids['manager@elroi.test'],
-        created_at: assignedAt,
+        created_at: tsFromNow(b.daysFromNow - 2),
       })
     }
-    if (['in_progress', 'resolved', 'closed', 'reopened'].includes(t.status)) {
-      history.push({
-        ticket_id: ticket.id,
-        action: 'status_changed',
-        old_value: 'assigned',
-        new_value: t.status === 'reopened' ? 'reopened' : t.status,
-        changed_by: assignedTo,
-        created_at: daysAgoIso(Math.max(t.daysAgo - 2, 0)),
+    if (history.length)
+      await admin.from('booking_history').insert(history)
+
+    // payment
+    if (b.paid && b.paid > 0) {
+      await admin.from('payments').insert({
+        booking_id: booking.id,
+        amount: b.paid,
+        payment_method: 'mobile_money',
+        payment_status:
+          b.amount && b.paid >= b.amount ? 'paid' : 'partially_paid',
+        transaction_reference: `MoMo-${booking.booking_number}`,
+        recorded_by: ids['manager@elroi.test'],
+        payment_date: tsFromNow(b.daysFromNow),
       })
-    }
-    if (history.length) {
-      const { error: hErr } = await admin.from('ticket_history').insert(history)
-      if (hErr) throw hErr
     }
 
-    // Conversation — the message trigger bumps updated_at and logs history.
-    if (t.conversation?.length) {
-      for (let i = 0; i < t.conversation.length; i++) {
-        const msg = t.conversation[i]
-        const { error: mErr } = await admin.from('ticket_messages').insert({
-          ticket_id: ticket.id,
-          sender_id: ids[msg.from],
-          message: msg.message,
-          message_type: 'public',
-          created_at: daysAgoIso(Math.max(t.daysAgo - i * 0.25, 0)),
-        })
-        if (mErr) throw mErr
-      }
-    }
-
-    console.log(`  ✓ ${ticket.ticket_number}  ${t.title}`)
+    console.log(`  ✓ ${booking.booking_number}  ${svc.slug}  (${b.status})`)
   }
 }
 
-function daysAgoIso(days: number): string {
-  return new Date(Date.now() - days * 86_400_000).toISOString()
-}
-
 async function main() {
-  console.log('\nEL-ROI Help Desk Tracker — seeding\n')
-
+  console.log('\nEL-ROI Services — seeding\n')
   console.log('Users:')
-  for (const u of DEMO_USERS) await ensureUser(u)
+  await ensureUsers()
 
   const { count } = await admin
-    .from('tickets')
+    .from('bookings')
     .select('*', { count: 'exact', head: true })
 
-  if (reset) {
-    await wipe()
-  } else if ((count ?? 0) > 0) {
+  if (reset) await wipeBookings()
+
+  console.log('\nCatalogue:')
+  await seedCatalogue(reset)
+
+  if (!reset && (count ?? 0) > 0) {
     console.log(
-      `\nTickets table already has ${count} rows. Skipping ticket seed.\n` +
-        'Run "npm run seed -- --reset" to wipe and reseed.\n',
+      `\nBookings table has ${count} rows — skipping. Use "npm run seed -- --reset" to rebuild.\n`,
     )
     return
   }
 
-  console.log('\nTickets:')
-  await seedTickets()
+  console.log('\nBookings:')
+  await seedBookings()
 
-  console.log('\nDone. Demo password for every account: ' + DEMO_PASSWORD + '\n')
+  console.log(`\nDone. Demo password for every account: ${DEMO_PASSWORD}\n`)
 }
 
 main().catch((err) => {

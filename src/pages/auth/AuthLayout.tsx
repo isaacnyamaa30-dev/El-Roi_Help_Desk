@@ -17,7 +17,7 @@ export function AuthLayout({
       <div className="w-full max-w-md">
         <Link to="/" className="block text-center text-white">
           <p className="font-display text-2xl font-extrabold uppercase tracking-wide">
-            EL-ROI <span className="text-gold">Help Desk</span>
+            EL-ROI <span className="text-gold">Services</span>
           </p>
           <p className="mt-1 text-sm text-blue-100/80">{APP_TAGLINE}</p>
         </Link>

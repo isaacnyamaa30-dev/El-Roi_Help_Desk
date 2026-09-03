@@ -14,12 +14,43 @@ import {
 const inputClass =
   'mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-royal focus:outline-none focus:ring-1 focus:ring-royal'
 
+const FIELDS: {
+  key: keyof RegisterInput
+  label: string
+  type?: string
+  autoComplete?: string
+  placeholder?: string
+}[] = [
+  { key: 'fullName', label: 'Full name', autoComplete: 'name' },
+  { key: 'email', label: 'Email', type: 'email', autoComplete: 'email' },
+  {
+    key: 'phone',
+    label: 'Phone number',
+    type: 'tel',
+    autoComplete: 'tel',
+    placeholder: '0241234567',
+  },
+  {
+    key: 'password',
+    label: 'Password',
+    type: 'password',
+    autoComplete: 'new-password',
+  },
+  {
+    key: 'confirmPassword',
+    label: 'Confirm password',
+    type: 'password',
+    autoComplete: 'new-password',
+  },
+]
+
 export function Register() {
   const { session, role, loading } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState<RegisterInput>({
     fullName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   })
@@ -46,9 +77,9 @@ export function Register() {
       const result = await signUp({
         fullName: form.fullName,
         email: form.email,
+        phone: form.phone,
         password: form.password,
       })
-      // If email confirmation is disabled, a session is returned immediately.
       if (result.session) navigate('/dashboard', { replace: true })
       else setDone(true)
     } catch (err) {
@@ -65,11 +96,18 @@ export function Register() {
 
   if (done)
     return (
-      <AuthLayout title="Check your email" footer={<Link to="/login" className="font-medium text-gold hover:underline">Back to login</Link>}>
+      <AuthLayout
+        title="Check your email"
+        footer={
+          <Link to="/login" className="font-medium text-gold hover:underline">
+            Back to login
+          </Link>
+        }
+      >
         <p className="text-sm text-gray-600">
-          Your account has been created. If email confirmation is enabled for
-          this project, click the link we sent to{' '}
-          <span className="font-medium">{form.email}</span> before logging in.
+          Your account has been created. If email confirmation is enabled, click
+          the link we sent to <span className="font-medium">{form.email}</span>{' '}
+          before logging in.
         </p>
       </AuthLayout>
     )
@@ -92,82 +130,38 @@ export function Register() {
             {formError}
           </p>
         )}
-        <div>
-          <label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-            Full name
-          </label>
-          <input
-            id="fullName"
-            className={inputClass}
-            value={form.fullName}
-            onChange={(e) => set('fullName', e.target.value)}
-          />
-          {errors.fullName && (
-            <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>
-          )}
-        </div>
-        <div>
-          <label htmlFor="email" className="text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            className={inputClass}
-            value={form.email}
-            onChange={(e) => set('email', e.target.value)}
-          />
-          {errors.email && (
-            <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-          )}
-        </div>
-        <div>
-          <label htmlFor="password" className="text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            className={inputClass}
-            value={form.password}
-            onChange={(e) => set('password', e.target.value)}
-          />
-          {errors.password && (
-            <p className="mt-1 text-xs text-red-600">{errors.password}</p>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="text-sm font-medium text-gray-700"
-          >
-            Confirm password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            className={inputClass}
-            value={form.confirmPassword}
-            onChange={(e) => set('confirmPassword', e.target.value)}
-          />
-          {errors.confirmPassword && (
-            <p className="mt-1 text-xs text-red-600">
-              {errors.confirmPassword}
-            </p>
-          )}
-        </div>
+        {FIELDS.map((f) => (
+          <div key={f.key}>
+            <label
+              htmlFor={f.key}
+              className="text-sm font-medium text-gray-700"
+            >
+              {f.label}
+            </label>
+            <input
+              id={f.key}
+              type={f.type ?? 'text'}
+              autoComplete={f.autoComplete}
+              placeholder={f.placeholder}
+              className={inputClass}
+              value={form[f.key]}
+              onChange={(e) => set(f.key, e.target.value)}
+              aria-invalid={!!errors[f.key]}
+            />
+            {errors[f.key] && (
+              <p className="mt-1 text-xs text-red-600">{errors[f.key]}</p>
+            )}
+          </div>
+        ))}
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-md bg-royal px-4 py-2 text-sm font-medium text-white hover:bg-royal-dark disabled:opacity-60"
+          className="w-full rounded-md bg-royal px-4 py-2 text-sm font-semibold text-white transition hover:bg-royal-dark disabled:opacity-60"
         >
           {busy ? 'Creating account…' : 'Create account'}
         </button>
         <p className="text-center text-xs text-gray-400">
-          New accounts are created with the <strong>User</strong> role.
+          New accounts are created with the <strong>Client</strong> role.
         </p>
       </form>
     </AuthLayout>

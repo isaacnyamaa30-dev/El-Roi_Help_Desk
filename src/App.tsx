@@ -3,38 +3,75 @@ import { ROLES } from './constants'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { AppShell } from './components/layout/AppShell'
 
-import { Landing } from './pages/auth/Landing'
+import { PublicLayout } from './pages/public/PublicLayout'
+import { Home } from './pages/public/Home'
+import { ServicesOverview } from './pages/public/ServicesOverview'
+import { CategoryPage } from './pages/public/CategoryPage'
+import { HowItWorks } from './pages/public/HowItWorks'
+
 import { Login } from './pages/auth/Login'
 import { Register } from './pages/auth/Register'
 
-import { Dashboard } from './pages/user/Dashboard'
-import { NewTicket } from './pages/user/NewTicket'
-import { MyTickets } from './pages/user/MyTickets'
-import { Profile } from './pages/user/Profile'
-import { TicketDetail } from './pages/TicketDetail'
+import { ClientDashboard } from './pages/client/ClientDashboard'
+import { BookService } from './pages/client/BookService'
+import { MyBookings } from './pages/client/MyBookings'
+import { ClientPayments } from './pages/client/ClientPayments'
+import { BookingDetail } from './pages/BookingDetail'
+import { Profile } from './pages/Profile'
 
-import { AgentDashboard } from './pages/agent/AgentDashboard'
-import { AgentTickets } from './pages/agent/AgentTickets'
+import { StaffDashboard } from './pages/staff/StaffDashboard'
+import { StaffJobs } from './pages/staff/StaffJobs'
 
 import { AdminDashboard } from './pages/admin/AdminDashboard'
-import { AllTickets } from './pages/admin/AllTickets'
-import { AgentsList } from './pages/admin/AgentsList'
-import { UsersAdmin } from './pages/admin/UsersAdmin'
-import { Reports } from './pages/admin/Reports'
+import { AdminBookings } from './pages/admin/AdminBookings'
+import { AdminCalendar } from './pages/admin/AdminCalendar'
+import { AdminServices } from './pages/admin/AdminServices'
+import { AdminPrices } from './pages/admin/AdminPrices'
+import { AdminClients } from './pages/admin/AdminClients'
+import { AdminStaff } from './pages/admin/AdminStaff'
+import { AdminPayments } from './pages/admin/AdminPayments'
+import { AdminReports } from './pages/admin/AdminReports'
+import { AdminSettings } from './pages/admin/AdminSettings'
 
 import { NotFound } from './pages/NotFound'
 
+const CLIENT = [ROLES.CLIENT]
+const WORKER = [ROLES.CLEANER, ROLES.DRIVER]
 const STAFF = [ROLES.MANAGER, ROLES.ADMIN]
 
 export default function App() {
   return (
     <Routes>
-      {/* public */}
-      <Route path="/" element={<Landing />} />
+      {/* public marketing site */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/services" element={<ServicesOverview />} />
+        <Route path="/services/cleaning" element={<CategoryPage slug="cleaning" />} />
+        <Route path="/services/driving" element={<CategoryPage slug="driving" />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+      </Route>
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* authenticated (any role) */}
+      {/* client */}
+      <Route
+        element={
+          <ProtectedRoute allow={CLIENT}>
+            <AppShell />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<ClientDashboard />} />
+        <Route path="/book" element={<BookService />} />
+        <Route path="/book/cleaning" element={<BookService presetCategory="cleaning" />} />
+        <Route path="/book/driving" element={<BookService presetCategory="driving" />} />
+        <Route path="/bookings" element={<MyBookings />} />
+        <Route path="/bookings/:id" element={<BookingDetail />} />
+        <Route path="/payments" element={<ClientPayments />} />
+      </Route>
+
+      {/* profile — any authenticated user */}
       <Route
         element={
           <ProtectedRoute>
@@ -42,24 +79,22 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/tickets" element={<MyTickets />} />
-        <Route path="/tickets/new" element={<NewTicket />} />
-        <Route path="/tickets/:id" element={<TicketDetail />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
 
-      {/* agent */}
+      {/* staff (cleaner / driver) */}
       <Route
         element={
-          <ProtectedRoute allow={[ROLES.AGENT]}>
+          <ProtectedRoute allow={WORKER}>
             <AppShell />
           </ProtectedRoute>
         }
       >
-        <Route path="/agent" element={<AgentDashboard />} />
-        <Route path="/agent/tickets" element={<AgentTickets />} />
-        <Route path="/agent/tickets/:id" element={<TicketDetail />} />
+        <Route path="/staff" element={<StaffDashboard />} />
+        <Route path="/staff/jobs" element={<StaffJobs />} />
+        <Route path="/staff/jobs/:id" element={<BookingDetail />} />
+        <Route path="/staff/history" element={<StaffJobs completed />} />
+        <Route path="/staff/profile" element={<Profile />} />
       </Route>
 
       {/* manager / admin */}
@@ -71,15 +106,20 @@ export default function App() {
         }
       >
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/tickets" element={<AllTickets />} />
+        <Route path="/admin/bookings" element={<AdminBookings />} />
         <Route
-          path="/admin/tickets/unassigned"
-          element={<AllTickets unassignedOnly />}
+          path="/admin/bookings/unassigned"
+          element={<AdminBookings unassignedOnly />}
         />
-        <Route path="/admin/tickets/:id" element={<TicketDetail />} />
-        <Route path="/admin/agents" element={<AgentsList />} />
-        <Route path="/admin/users" element={<UsersAdmin />} />
-        <Route path="/admin/reports" element={<Reports />} />
+        <Route path="/admin/bookings/:id" element={<BookingDetail />} />
+        <Route path="/admin/calendar" element={<AdminCalendar />} />
+        <Route path="/admin/services" element={<AdminServices />} />
+        <Route path="/admin/prices" element={<AdminPrices />} />
+        <Route path="/admin/clients" element={<AdminClients />} />
+        <Route path="/admin/staff" element={<AdminStaff />} />
+        <Route path="/admin/payments" element={<AdminPayments />} />
+        <Route path="/admin/reports" element={<AdminReports />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
       </Route>
 
       <Route path="/404" element={<NotFound />} />

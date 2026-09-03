@@ -1,12 +1,14 @@
 /**
- * Centralized configuration for EL-ROI Help Desk Tracker.
- * Avoid scattering string literals for roles / statuses / priorities /
- * categories through the app — import from here instead.
+ * Centralized configuration for EL-ROI Services.
+ * Import roles / statuses / pricing types from here — never scatter raw
+ * string literals through the components.
  */
 
-export const APP_NAME = 'EL-ROI Help Desk Tracker'
-export const APP_TAGLINE = 'Every Issue Seen. Every Request Tracked.'
-export const APP_TAGLINE_SECONDARY = 'Report. Track. Resolve.'
+export const APP_NAME = 'EL-ROI Weekend Cleaning And Driving Services'
+export const APP_SHORT_NAME = 'EL-ROI Services'
+export const APP_TAGLINE = 'Book. Track. Serve.'
+export const APP_TAGLINE_SECONDARY =
+  'Professional weekend cleaning and driving services made simple.'
 
 /** Developer and copyright owner. */
 export const APP_AUTHOR = 'Isaac Nyamaa Boadi'
@@ -26,8 +28,9 @@ export const APP_CONTACT = {
 /* ------------------------------------------------------------------ roles */
 
 export const ROLES = {
-  USER: 'user',
-  AGENT: 'agent',
+  CLIENT: 'client',
+  CLEANER: 'cleaner',
+  DRIVER: 'driver',
   MANAGER: 'manager',
   ADMIN: 'admin',
 } as const
@@ -35,155 +38,225 @@ export const ROLES = {
 export type Role = (typeof ROLES)[keyof typeof ROLES]
 
 export const ROLE_LABELS: Record<Role, string> = {
-  user: 'User',
-  agent: 'Agent',
+  client: 'Client',
+  cleaner: 'Cleaner',
+  driver: 'Driver',
   manager: 'Manager',
   admin: 'Administrator',
 }
 
-/** Roles allowed to view/manage every ticket. */
+/** Manager + admin: can see and manage everything. */
 export const STAFF_ROLES: Role[] = [ROLES.MANAGER, ROLES.ADMIN]
 
-/* --------------------------------------------------------------- statuses */
+/** Field workers. */
+export const WORKER_ROLES: Role[] = [ROLES.CLEANER, ROLES.DRIVER]
 
-export const TICKET_STATUS = {
-  OPEN: 'open',
-  ASSIGNED: 'assigned',
-  IN_PROGRESS: 'in_progress',
-  WAITING_FOR_USER: 'waiting_for_user',
-  RESOLVED: 'resolved',
-  CLOSED: 'closed',
-  REOPENED: 'reopened',
+/* --------------------------------------------------------- service categories */
+
+export const CATEGORY = {
+  CLEANING: 'cleaning',
+  DRIVING: 'driving',
 } as const
 
-export type TicketStatus = (typeof TICKET_STATUS)[keyof typeof TICKET_STATUS]
+export type CategorySlug = (typeof CATEGORY)[keyof typeof CATEGORY]
 
-export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = {
-  open: 'Open',
-  assigned: 'Assigned',
-  in_progress: 'In Progress',
-  waiting_for_user: 'Waiting for User',
-  resolved: 'Resolved',
-  closed: 'Closed',
-  reopened: 'Reopened',
+/** Which worker role handles which service category. */
+export const CATEGORY_WORKER_ROLE: Record<CategorySlug, Role> = {
+  cleaning: ROLES.CLEANER,
+  driving: ROLES.DRIVER,
 }
 
-export const TICKET_STATUS_ORDER: TicketStatus[] = [
-  TICKET_STATUS.OPEN,
-  TICKET_STATUS.ASSIGNED,
-  TICKET_STATUS.IN_PROGRESS,
-  TICKET_STATUS.WAITING_FOR_USER,
-  TICKET_STATUS.RESOLVED,
-  TICKET_STATUS.CLOSED,
-  TICKET_STATUS.REOPENED,
+/* ----------------------------------------------------------- pricing types */
+
+export const PRICING_TYPE = {
+  FIXED: 'fixed',
+  HOURLY: 'hourly',
+  DAILY: 'daily',
+  PACKAGE: 'package',
+  QUOTE: 'quote',
+} as const
+
+export type PricingType = (typeof PRICING_TYPE)[keyof typeof PRICING_TYPE]
+
+export const PRICING_TYPE_LABELS: Record<PricingType, string> = {
+  fixed: 'Fixed price',
+  hourly: 'Per hour',
+  daily: 'Per day',
+  package: 'Per package',
+  quote: 'Request a quote',
+}
+
+/** Cleaning material options — these become `service_prices.pricing_option`. */
+export const MATERIAL_OPTION = {
+  ELROI: 'elroi_materials',
+  CLIENT: 'client_materials',
+} as const
+
+export type MaterialOption =
+  (typeof MATERIAL_OPTION)[keyof typeof MATERIAL_OPTION]
+
+export const MATERIAL_OPTION_LABELS: Record<MaterialOption, string> = {
+  elroi_materials: 'EL-ROI provides cleaning materials',
+  client_materials: 'Client provides cleaning materials',
+}
+
+/* --------------------------------------------------------- booking statuses */
+
+export const BOOKING_STATUS = {
+  PENDING: 'pending',
+  CONFIRMED: 'confirmed',
+  ASSIGNED: 'assigned',
+  ON_THE_WAY: 'on_the_way',
+  IN_PROGRESS: 'in_progress',
+  AWAITING_PAYMENT: 'awaiting_payment',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  REJECTED: 'rejected',
+} as const
+
+export type BookingStatus =
+  (typeof BOOKING_STATUS)[keyof typeof BOOKING_STATUS]
+
+export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  assigned: 'Assigned',
+  on_the_way: 'On The Way',
+  in_progress: 'In Progress',
+  awaiting_payment: 'Awaiting Payment',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  rejected: 'Rejected',
+}
+
+export const BOOKING_STATUS_ORDER: BookingStatus[] = [
+  BOOKING_STATUS.PENDING,
+  BOOKING_STATUS.CONFIRMED,
+  BOOKING_STATUS.ASSIGNED,
+  BOOKING_STATUS.ON_THE_WAY,
+  BOOKING_STATUS.IN_PROGRESS,
+  BOOKING_STATUS.AWAITING_PAYMENT,
+  BOOKING_STATUS.COMPLETED,
+  BOOKING_STATUS.CANCELLED,
+  BOOKING_STATUS.REJECTED,
 ]
+
+/** Badge classes — navy = new, gold = in-flight, green = done. */
+export const BOOKING_STATUS_STYLES: Record<BookingStatus, string> = {
+  pending: 'bg-navy-tint text-navy ring-1 ring-navy/20',
+  confirmed: 'bg-royal/10 text-royal-dark ring-1 ring-royal/20',
+  assigned: 'bg-royal/10 text-royal-dark ring-1 ring-royal/20',
+  on_the_way: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
+  in_progress: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
+  awaiting_payment: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300',
+  completed: 'bg-green-tint text-green-dark ring-1 ring-green/30',
+  cancelled: 'bg-gray-200 text-gray-700 ring-1 ring-gray-300',
+  rejected: 'bg-rose-100 text-rose-800 ring-1 ring-rose-300',
+}
 
 /**
- * Tailwind classes for each status badge. Tuned to the EL-ROI brand:
- * navy for new/active, gold for in-flight, green for done.
- * Each badge also carries a ring so colour is never the only signal.
+ * Which statuses staff may move a booking into from its current status.
+ * Enforced in the UI; RLS + guard trigger still guard the write.
  */
-export const TICKET_STATUS_STYLES: Record<TicketStatus, string> = {
-  open: 'bg-navy-tint text-navy ring-1 ring-navy/20',
-  assigned: 'bg-royal/10 text-royal-dark ring-1 ring-royal/20',
-  in_progress: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
-  waiting_for_user: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300',
-  resolved: 'bg-green-tint text-green-dark ring-1 ring-green/30',
-  closed: 'bg-gray-200 text-gray-700 ring-1 ring-gray-300',
-  reopened: 'bg-rose-100 text-rose-800 ring-1 ring-rose-300',
+export const STAFF_STATUS_TRANSITIONS: Record<BookingStatus, BookingStatus[]> = {
+  pending: ['confirmed', 'rejected', 'cancelled'],
+  confirmed: ['assigned', 'cancelled'],
+  assigned: ['on_the_way', 'in_progress', 'cancelled'],
+  on_the_way: ['in_progress', 'cancelled'],
+  in_progress: ['awaiting_payment', 'completed'],
+  awaiting_payment: ['completed'],
+  completed: [],
+  cancelled: [],
+  rejected: [],
 }
 
-/* ------------------------------------------------------------- priorities */
+/** The action buttons a field worker sees, keyed by current status. */
+export const WORKER_STATUS_ACTIONS: Partial<
+  Record<BookingStatus, { next: BookingStatus; label: string }[]>
+> = {
+  assigned: [{ next: 'on_the_way', label: "I'm On The Way" }],
+  on_the_way: [{ next: 'in_progress', label: 'Start Service' }],
+  in_progress: [{ next: 'completed', label: 'Complete Service' }],
+}
 
-export const TICKET_PRIORITY = {
-  LOW: 'low',
-  MEDIUM: 'medium',
-  HIGH: 'high',
-  URGENT: 'urgent',
+/* --------------------------------------------------------- payment statuses */
+
+export const PAYMENT_STATUS = {
+  UNPAID: 'unpaid',
+  PARTIALLY_PAID: 'partially_paid',
+  PAID: 'paid',
+  REFUNDED: 'refunded',
 } as const
 
-export type TicketPriority =
-  (typeof TICKET_PRIORITY)[keyof typeof TICKET_PRIORITY]
+export type PaymentStatus =
+  (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS]
 
-export const TICKET_PRIORITY_LABELS: Record<TicketPriority, string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-  urgent: 'Urgent',
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  unpaid: 'Unpaid',
+  partially_paid: 'Partially Paid',
+  paid: 'Paid',
+  refunded: 'Refunded',
 }
 
-export const TICKET_PRIORITY_OPTIONS: TicketPriority[] = [
-  TICKET_PRIORITY.LOW,
-  TICKET_PRIORITY.MEDIUM,
-  TICKET_PRIORITY.HIGH,
-  TICKET_PRIORITY.URGENT,
+export const PAYMENT_STATUS_STYLES: Record<PaymentStatus, string> = {
+  unpaid: 'bg-gray-200 text-gray-700 ring-1 ring-gray-300',
+  partially_paid: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
+  paid: 'bg-green-tint text-green-dark ring-1 ring-green/30',
+  refunded: 'bg-rose-100 text-rose-800 ring-1 ring-rose-300',
+}
+
+export const PAYMENT_METHOD = {
+  CASH: 'cash',
+  MOBILE_MONEY: 'mobile_money',
+  BANK_TRANSFER: 'bank_transfer',
+  OTHER: 'other',
+} as const
+
+export type PaymentMethod =
+  (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD]
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  cash: 'Cash',
+  mobile_money: 'Mobile Money',
+  bank_transfer: 'Bank Transfer',
+  other: 'Other',
+}
+
+export const PAYMENT_METHOD_OPTIONS: PaymentMethod[] = [
+  PAYMENT_METHOD.CASH,
+  PAYMENT_METHOD.MOBILE_MONEY,
+  PAYMENT_METHOD.BANK_TRANSFER,
+  PAYMENT_METHOD.OTHER,
 ]
 
-export const TICKET_PRIORITY_STYLES: Record<TicketPriority, string> = {
-  low: 'bg-gray-100 text-gray-700 ring-1 ring-gray-300',
-  medium: 'bg-navy-tint text-navy ring-1 ring-navy/20',
-  high: 'bg-gold-tint text-gold-dark ring-1 ring-gold/40',
-  urgent: 'bg-red-100 text-red-800 ring-1 ring-red-300',
-}
-
-export const DEFAULT_PRIORITY: TicketPriority = TICKET_PRIORITY.MEDIUM
-
-/* ------------------------------------------------------------- categories */
-
-export const TICKET_CATEGORIES = [
-  'Hardware',
-  'Software',
-  'Internet / Network',
-  'Account / Login',
-  'Printer',
-  'Email',
-  'Access / Permission',
-  'General Support',
-  'Other',
-] as const
-
-export type TicketCategory = (typeof TICKET_CATEGORIES)[number]
-
-/* ---------------------------------------------------------- history verbs */
-
-export const HISTORY_ACTION = {
-  TICKET_CREATED: 'ticket_created',
-  TICKET_ASSIGNED: 'ticket_assigned',
-  TICKET_REASSIGNED: 'ticket_reassigned',
-  PRIORITY_CHANGED: 'priority_changed',
-  STATUS_CHANGED: 'status_changed',
-  AGENT_RESPONSE_ADDED: 'agent_response_added',
-  USER_RESPONSE_ADDED: 'user_response_added',
-  TICKET_RESOLVED: 'ticket_resolved',
-  TICKET_REOPENED: 'ticket_reopened',
-  TICKET_CLOSED: 'ticket_closed',
-} as const
+/* --------------------------------------------------------- history actions */
 
 export const HISTORY_ACTION_LABELS: Record<string, string> = {
-  ticket_created: 'Ticket created',
-  ticket_assigned: 'Ticket assigned',
-  ticket_reassigned: 'Ticket reassigned',
-  priority_changed: 'Priority changed',
+  booking_created: 'Booking created',
+  booking_confirmed: 'Booking confirmed',
+  booking_rejected: 'Booking rejected',
+  booking_assigned: 'Staff assigned',
+  booking_reassigned: 'Staff reassigned',
   status_changed: 'Status changed',
-  agent_response_added: 'Agent responded',
-  user_response_added: 'User responded',
-  ticket_resolved: 'Ticket resolved',
-  ticket_reopened: 'Ticket reopened',
-  ticket_closed: 'Ticket closed',
+  price_changed: 'Price changed',
+  payment_recorded: 'Payment recorded',
+  service_started: 'Service started',
+  service_completed: 'Service completed',
+  booking_cancelled: 'Booking cancelled',
 }
 
-/* ---------------------------------------------- allowed status transitions */
+/* ------------------------------------------------------------------ misc */
 
-/**
- * Which statuses a support user may move a ticket into from its current
- * status. Enforced in the UI; RLS still guards the write server-side.
- */
-export const STATUS_TRANSITIONS: Record<TicketStatus, TicketStatus[]> = {
-  open: ['assigned', 'in_progress', 'closed'],
-  assigned: ['in_progress', 'waiting_for_user', 'closed'],
-  in_progress: ['waiting_for_user', 'resolved', 'closed'],
-  waiting_for_user: ['in_progress', 'resolved', 'closed'],
-  resolved: ['reopened', 'closed'],
-  reopened: ['in_progress', 'waiting_for_user', 'resolved', 'closed'],
-  closed: ['reopened'],
-}
+export const CURRENCY_SYMBOL = 'GH₵'
+export const BUSINESS_TIMEZONE = 'Africa/Accra'
+
+/** 0 = Sunday … 6 = Saturday */
+export const WEEKDAY_LABELS = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+]

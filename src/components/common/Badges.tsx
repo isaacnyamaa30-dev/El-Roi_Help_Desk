@@ -1,26 +1,26 @@
 import {
-  TICKET_PRIORITY_LABELS,
-  TICKET_PRIORITY_STYLES,
-  TICKET_STATUS_LABELS,
-  TICKET_STATUS_STYLES,
+  BOOKING_STATUS_LABELS,
+  BOOKING_STATUS_STYLES,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_STYLES,
 } from '../../constants'
-import type { TicketPriority, TicketStatus } from '../../types'
+import type { BookingStatus, PaymentStatus } from '../../types'
 
 const base =
   'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap'
 
-export function StatusBadge({ status }: { status: TicketStatus }) {
+export function BookingStatusBadge({ status }: { status: BookingStatus }) {
   return (
-    <span className={`${base} ${TICKET_STATUS_STYLES[status]}`}>
-      {TICKET_STATUS_LABELS[status]}
+    <span className={`${base} ${BOOKING_STATUS_STYLES[status]}`}>
+      {BOOKING_STATUS_LABELS[status]}
     </span>
   )
 }
 
-export function PriorityBadge({ priority }: { priority: TicketPriority }) {
+export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   return (
-    <span className={`${base} ${TICKET_PRIORITY_STYLES[priority]}`}>
-      {TICKET_PRIORITY_LABELS[priority]}
+    <span className={`${base} ${PAYMENT_STATUS_STYLES[status]}`}>
+      {PAYMENT_STATUS_LABELS[status]}
     </span>
   )
 }

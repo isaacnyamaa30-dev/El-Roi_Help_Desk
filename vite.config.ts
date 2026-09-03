@@ -18,10 +18,10 @@ export default defineConfig({
         'apple-touch-icon.png',
       ],
       manifest: {
-        name: 'EL-ROI Help Desk Tracker',
-        short_name: 'EL-ROI Help Desk',
+        name: 'EL-ROI Weekend Cleaning And Driving Services',
+        short_name: 'EL-ROI Services',
         description:
-          'Report, track and resolve support tickets with the EL-ROI help desk.',
+          'Book, track and pay for professional weekend cleaning and driving services.',
         id: '/',
         start_url: '/',
         scope: '/',
@@ -30,7 +30,7 @@ export default defineConfig({
         background_color: '#17296e',
         theme_color: '#17296e',
         lang: 'en',
-        categories: ['productivity', 'business'],
+        categories: ['business', 'lifestyle', 'productivity'],
         icons: [
           { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },
@@ -42,12 +42,8 @@ export default defineConfig({
           },
         ],
         shortcuts: [
-          {
-            name: 'Create a ticket',
-            short_name: 'New ticket',
-            url: '/tickets/new',
-          },
-          { name: 'My tickets', short_name: 'Tickets', url: '/tickets' },
+          { name: 'Book a service', short_name: 'Book', url: '/book' },
+          { name: 'My bookings', short_name: 'Bookings', url: '/bookings' },
         ],
       },
       workbox: {

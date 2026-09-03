@@ -1,26 +1,76 @@
-import { TICKET_PRIORITY, TICKET_STATUS } from '../constants'
-import type { Ticket } from '../types'
+import { BOOKING_STATUS, PAYMENT_STATUS } from '../constants'
+import type { BookingWithRelations } from '../types'
 
-export function countByStatus(tickets: Ticket[]) {
+export function countByStatus(bookings: BookingWithRelations[]) {
   const acc = {
-    total: tickets.length,
-    open: 0,
+    total: bookings.length,
+    pending: 0,
+    confirmed: 0,
     assigned: 0,
+    on_the_way: 0,
     in_progress: 0,
-    waiting_for_user: 0,
-    resolved: 0,
-    closed: 0,
-    reopened: 0,
+    awaiting_payment: 0,
+    completed: 0,
+    cancelled: 0,
+    rejected: 0,
     unassigned: 0,
-    urgent: 0,
+    upcoming: 0,
+    active: 0,
   }
-  for (const t of tickets) {
-    acc[t.status] += 1
-    if (!t.assigned_to && t.status !== TICKET_STATUS.CLOSED) acc.unassigned += 1
-    if (t.priority === TICKET_PRIORITY.URGENT && t.status !== TICKET_STATUS.CLOSED)
-      acc.urgent += 1
+  const today = new Date().toISOString().slice(0, 10)
+  for (const b of bookings) {
+    acc[b.status] += 1
+    if (
+      !b.assigned_staff_id &&
+      [BOOKING_STATUS.PENDING, BOOKING_STATUS.CONFIRMED].includes(
+        b.status as 'pending' | 'confirmed',
+      )
+    )
+      acc.unassigned += 1
+    if (
+      b.service_date >= today &&
+      ![
+        BOOKING_STATUS.COMPLETED,
+        BOOKING_STATUS.CANCELLED,
+        BOOKING_STATUS.REJECTED,
+      ].includes(b.status as 'completed')
+    )
+      acc.upcoming += 1
+    if (
+      [
+        BOOKING_STATUS.ASSIGNED,
+        BOOKING_STATUS.ON_THE_WAY,
+        BOOKING_STATUS.IN_PROGRESS,
+      ].includes(b.status as 'assigned')
+    )
+      acc.active += 1
   }
   return acc
+}
+
+/** Revenue = sum of confirmed booking amounts that are marked paid. */
+export function revenueSummary(bookings: BookingWithRelations[]) {
+  let recorded = 0
+  let outstanding = 0
+  for (const b of bookings) {
+    const total = b.total_amount ?? 0
+    const paid = b.paid_total ?? 0
+    recorded += paid
+    if (
+      b.status !== BOOKING_STATUS.CANCELLED &&
+      b.status !== BOOKING_STATUS.REJECTED
+    ) {
+      outstanding += Math.max(total - paid, 0)
+    }
+  }
+  return { recorded, outstanding }
+}
+
+/** Derive an overall payment state for a booking from what has been paid. */
+export function paymentState(total: number | null, paid: number) {
+  if (paid <= 0) return PAYMENT_STATUS.UNPAID
+  if (total !== null && paid >= total) return PAYMENT_STATUS.PAID
+  return PAYMENT_STATUS.PARTIALLY_PAID
 }
 
 export function groupBy<T>(rows: T[], key: (row: T) => string) {
