@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Menu, X } from 'lucide-react'
 import {
   APP_AUTHOR,
   APP_CONTACT,
@@ -15,39 +17,40 @@ const NAV = [
   { label: 'How It Works', to: '/how-it-works' },
 ]
 
+const linkClass = ({ isActive }: { isActive: boolean }) =>
+  `rounded-md px-3 py-1.5 text-sm font-medium transition ${
+    isActive
+      ? 'bg-navy-light text-white'
+      : 'text-blue-100/80 hover:text-white'
+  }`
+
 export function PublicLayout() {
+  const [open, setOpen] = useState(false)
+
   return (
     <div className="flex min-h-screen flex-col bg-mist">
       <header className="border-b-2 border-gold bg-navy text-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
           <Link
             to="/"
-            className="font-display text-lg font-bold uppercase tracking-wide"
+            onClick={() => setOpen(false)}
+            className="font-display text-base font-bold uppercase tracking-wide sm:text-lg"
           >
             EL-ROI <span className="text-gold">Services</span>
           </Link>
+
           <nav className="hidden gap-1 sm:flex">
             {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.to === '/'}
-                className={({ isActive }) =>
-                  `rounded-md px-3 py-1.5 text-sm font-medium transition ${
-                    isActive
-                      ? 'bg-navy-light text-white'
-                      : 'text-blue-100/80 hover:text-white'
-                  }`
-                }
-              >
+              <NavLink key={n.to} to={n.to} end={n.to === '/'} className={linkClass}>
                 {n.label}
               </NavLink>
             ))}
           </nav>
+
           <div className="flex items-center gap-2">
             <Link
               to="/login"
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-blue-100/90 hover:text-white"
+              className="rounded-md px-2 py-1.5 text-sm font-medium text-blue-100/90 hover:text-white sm:px-3"
             >
               Log in
             </Link>
@@ -57,8 +60,32 @@ export function PublicLayout() {
             >
               Register
             </Link>
+            <button
+              aria-label="Menu"
+              onClick={() => setOpen((o) => !o)}
+              className="rounded-md p-1.5 text-blue-100/90 hover:bg-navy-light sm:hidden"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
         </div>
+
+        {/* mobile menu */}
+        {open && (
+          <nav className="flex flex-col gap-1 border-t border-white/10 px-4 pb-3 pt-2 sm:hidden">
+            {NAV.map((n) => (
+              <NavLink
+                key={n.to}
+                to={n.to}
+                end={n.to === '/'}
+                onClick={() => setOpen(false)}
+                className={linkClass}
+              >
+                {n.label}
+              </NavLink>
+            ))}
+          </nav>
+        )}
       </header>
 
       <main className="flex-1">
