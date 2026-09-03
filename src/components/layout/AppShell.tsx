@@ -14,12 +14,15 @@ import { useInstallPrompt } from '../../hooks/useInstallPrompt'
 import { useToast } from '../common/Toast'
 import { navForRole } from './navConfig'
 
+const runningStandalone = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(display-mode: standalone)').matches
+
 /** Compact "Install" button for the header. */
 function HeaderInstall() {
-  const { isInstalled, canInstall, manualHint, promptInstall } =
-    useInstallPrompt()
+  const { canInstall, manualHint, promptInstall } = useInstallPrompt()
   const { notify } = useToast()
-  if (isInstalled) return null
+  if (runningStandalone()) return null
   return (
     <button
       title="Install EL-ROI Services"
@@ -42,10 +45,9 @@ function HeaderInstall() {
 
 /** "Install app" entry in the sidebar. */
 function SidebarInstall() {
-  const { isInstalled, canInstall, manualHint, promptInstall } =
-    useInstallPrompt()
+  const { canInstall, manualHint, promptInstall } = useInstallPrompt()
   const { notify } = useToast()
-  if (isInstalled) return null
+  if (runningStandalone()) return null
   return (
     <button
       onClick={async () => {
