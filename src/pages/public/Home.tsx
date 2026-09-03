@@ -1,5 +1,6 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { ShareButton } from '../../components/common/ShareButton'
 import { homeForRole } from '../../components/layout/navConfig'
 import {
   APP_NAME,
@@ -50,7 +51,12 @@ export function Home() {
             >
               View Services
             </Link>
+            <ShareButton variant="ghost" />
           </div>
+          <p className="mt-3 text-xs text-blue-100/60">
+            Open it in your browser — no download needed — or install it on
+            your phone or laptop.
+          </p>
         </div>
       </section>
 

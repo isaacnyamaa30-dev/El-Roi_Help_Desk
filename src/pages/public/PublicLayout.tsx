@@ -7,6 +7,7 @@ import {
   APP_TAGLINE,
 } from '../../constants'
 import { InstallButton } from '../../components/common/InstallButton'
+import { ShareButton } from '../../components/common/ShareButton'
 
 const NAV = [
   { label: 'Home', to: '/' },
@@ -66,6 +67,7 @@ export function PublicLayout() {
 
       <footer className="border-t-2 border-gold bg-navy px-6 py-6 text-center text-xs text-blue-100/70">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-3">
+          <ShareButton variant="ghost" label="Share" />
           <InstallButton variant="ghost" />
         </div>
         <p className="mt-4">
