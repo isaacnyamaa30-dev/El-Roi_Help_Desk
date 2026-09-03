@@ -11,7 +11,8 @@ export default defineConfig({
     // Makes the app installable on phones and laptops (Progressive Web App).
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      injectRegister: false, // registered manually via <PwaManager />
+
       includeAssets: [
         'favicon.svg',
         'favicon-96.png',
