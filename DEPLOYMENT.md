@@ -1,6 +1,8 @@
-# Live Deployment — EL-ROI Help Desk Tracker
+# Live Deployment — EL-ROI Services
 
-This project has been provisioned and deployed. Details below.
+This project is provisioned and deployed. It began life as "EL-ROI Help Desk
+Tracker" and was rebuilt in place as **EL-ROI Weekend Cleaning And Driving
+Services Tracker** — same GitHub repo, Vercel project and Supabase project.
 
 ## URLs
 
@@ -11,37 +13,37 @@ This project has been provisioned and deployed. Details below.
 | Vercel project | https://vercel.com/tbc-daily/el-roi-help-desk |
 | Supabase project | https://supabase.com/dashboard/project/erpwrjeafkbluogdordf |
 
+_(The repo / Vercel project keep the old `el-roi-help-desk` name — cosmetic
+only. Rename them in the GitHub and Vercel dashboards if you like.)_
+
 ## Supabase
 
-- **Project ref:** `erpwrjeafkbluogdordf`
-- **Region:** `eu-west-2` (London)
-- **Migrations applied:** `0001_init_schema.sql`, `0002_rls_policies.sql`
-  (via `supabase db push`)
-- **Seeded:** 8 accounts, 12 tickets, conversations and history
-  (via `npm run seed`). Ticket numbers are issued from a Postgres sequence
-  that never rewinds, so after re-seeding they continue upward (e.g.
-  `ERH-000014`+) rather than restarting at `ERH-000001` — this is the same
-  way a real help desk behaves.
+- **Project ref:** `erpwrjeafkbluogdordf` · **Region:** `eu-west-2` (London)
+- **Migrations applied:** `0001` … `0009` (see the README table). Applied
+  with the built-in migration runner: `npm run db:migrate`.
+- **Seeded** with `npm run seed -- --reset`: 1 admin, 1 manager, 3 cleaners,
+  3 drivers, 5 clients; the full Cleaning + Driving catalogue with the real
+  cleaning prices; 22 bookings across every status; payments + history.
+- Booking numbers come from a Postgres sequence that never rewinds, so after
+  a re-seed they keep counting up (`ELR-000068`+) — as a real business would.
 - **Auth config:**
   - Site URL: `https://el-roi-help-desk.vercel.app`
-  - Redirect allow-list includes the Vercel domain, its preview
-    subdomains, and `http://localhost:5173`
-  - "Confirm email" is **off** (`mailer_autoconfirm = true`) so demo
-    sign-ups work immediately. Turn it back on in
-    Dashboard → Authentication → Providers → Email if you want the
-    confirmation step for a class exercise.
+  - Redirect allow-list: the Vercel domain, its preview subdomains, and
+    `http://localhost:5173`
+  - "Confirm email" is **off** so demo sign-ups log in immediately. Turn it
+    back on in Dashboard → Authentication → Providers → Email for a class
+    exercise.
 
 ## Vercel
 
-- **Project:** `tbc-daily/el-roi-help-desk`
-- **Framework preset:** Vite (build `vite build`, output `dist`)
-- **Environment variables** set for Production, Preview and Development:
-  - `VITE_SUPABASE_URL`
-  - `VITE_SUPABASE_ANON_KEY`
-  - (the service role key is **not** in Vercel — it is only used by the
-    local seed script)
+- **Project:** `tbc-daily/el-roi-help-desk` · framework preset **Vite**
+- **Environment variables** (Production, Preview, Development):
+  `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. The service role key is
+  **not** in Vercel.
 - **SPA routing:** `vercel.json` rewrites all paths to `/index.html`, so
-  deep links like `/admin/tickets` and `/tickets/:id` work on refresh.
+  deep links like `/admin/prices` and `/bookings/:id` work on refresh.
+- **Auto-deploy is ACTIVE** — every push to `main` triggers a production
+  deploy; pull requests get preview deployments.
 
 ## Demo accounts
 
@@ -51,8 +53,9 @@ Password for every account: `ElRoi#Demo2024`
 | --- | --- |
 | `admin@elroi.test` | admin |
 | `manager@elroi.test` | manager |
-| `agent1@elroi.test` … `agent3@elroi.test` | agent |
-| `user1@elroi.test` … `user3@elroi.test` | user |
+| `cleaner1@elroi.test` … `cleaner3@elroi.test` | cleaner |
+| `driver1@elroi.test` … `driver3@elroi.test` | driver |
+| `client1@elroi.test` … `client5@elroi.test` | client |
 
 > Demo credentials are for classroom use only.
 
@@ -60,55 +63,43 @@ Password for every account: `ElRoi#Demo2024`
 
 ## Redeploying after code changes
 
-The current deploys were pushed straight from this machine with the Vercel
-CLI:
-
 ```bash
-# from the project root, with VERCEL_TOKEN available
-vercel deploy --prod
-```
-
-### Automatic redeploys — ACTIVE
-
-The repo is connected to Vercel (production branch `main`). The
-"commit → push → auto-redeploy" workflow now works:
-
-```bash
-# edit code, test locally with `npm run dev`, then:
+npm run dev            # verify locally
 git add -A
 git commit -m "Describe your change"
-git push
+git push               # Vercel auto-deploys in ~1–2 min
 ```
 
-Every push to `main` triggers a production deploy; pull requests get their
-own preview deployments. You no longer need `vercel deploy` by hand.
+Installed PWA users see an **"Update Now"** banner on their next visit;
+first load after a deploy may briefly show the previous cached version
+before the service worker updates.
 
 Pushing from this machine uses Git Credential Manager (a browser prompt the
-first time). The `GITHUB_TOKEN` in `.env` was only used for the initial
-push and can be deleted.
+first time).
 
 ---
 
 ## Connecting a custom domain
 
-1. Vercel project → **Settings → Domains → Add** — enter e.g.
-   `helpdesk.elroi.com`.
-2. Add the DNS record Vercel shows at your domain registrar
-   (`CNAME` → `cname.vercel-dns.com` for a subdomain).
+1. Vercel project → **Settings → Domains → Add** — e.g. `services.elroi.com`.
+2. Add the DNS record Vercel shows at your registrar (`CNAME` →
+   `cname.vercel-dns.com` for a subdomain).
 3. Wait for verification; Vercel issues the HTTPS certificate automatically.
 4. In Supabase → **Authentication → URL Configuration**, change **Site URL**
    to the custom domain and add it to **Redirect URLs**.
 
+No production URL is hard-coded in the app.
+
 ---
 
-## Rotating the tokens used for setup
+## Local `.env`
 
-The `.env` file on this machine contains a Supabase access token and a
-Vercel token that were used only for provisioning. They are git-ignored, but
-you should delete them now that setup is done:
+`.env` (git-ignored) on the build machine holds:
 
-- Supabase: https://supabase.com/dashboard/account/tokens
-- Vercel: https://vercel.com/account/tokens
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — the app
+- `SUPABASE_SERVICE_ROLE_KEY` — `npm run seed`
+- `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_REGION` —
+  `npm run db:migrate`
 
-The app itself does not need them — it only uses `VITE_SUPABASE_URL` and
-`VITE_SUPABASE_ANON_KEY`.
+The personal Supabase / Vercel / GitHub tokens used during the original
+setup were removed after provisioning.
