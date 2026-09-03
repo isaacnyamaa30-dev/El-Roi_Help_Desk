@@ -10,10 +10,12 @@ export default defineConfig({
     tailwindcss(),
     // Makes the app installable on phones and laptops (Progressive Web App).
     VitePWA({
-      // 'prompt' so users get a visible "Update Now" banner (spec §82)
-      // instead of a silent swap that can leave a half-updated page.
-      registerType: 'prompt',
-      injectRegister: false, // registered manually via <PwaManager />
+      // autoUpdate: the SW skip-waits itself and the injected client reloads
+      // on activation. This is what lets a stale/stuck service worker
+      // recover on its own — a 'prompt' update can't reach a device that is
+      // already showing an out-of-date shell.
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
 
       includeAssets: [
         'favicon.svg',
@@ -50,6 +52,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
+        cleanupOutdatedCaches: true,
         // SPA fallback so deep links work offline once the shell is cached.
         navigateFallback: '/index.html',
         // Never serve the Supabase API from cache.
