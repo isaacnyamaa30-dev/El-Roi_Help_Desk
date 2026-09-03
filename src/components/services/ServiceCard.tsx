@@ -1,19 +1,11 @@
 import { Link } from 'react-router-dom'
 import { PriceDisplay } from './PriceDisplay'
-import { resolvePrice } from '../../services/catalogue'
+import { lowestPrice } from '../../services/catalogue'
 import type { ServiceWithDetails } from '../../types'
 
 /** A single service in a category catalogue. Shows the lowest available price. */
 export function ServiceCard({ service }: { service: ServiceWithDetails }) {
-  // Cheapest concrete price across packages/options, else "Request Quote".
-  const candidates = service.packages.length
-    ? service.packages.map((p) => resolvePrice(service, p.id, defaultOption(service)))
-    : [resolvePrice(service, null, defaultOption(service))]
-  const concrete = candidates.filter((c) => !c.isQuote && c.amount !== null)
-  const best =
-    concrete.length > 0
-      ? concrete.reduce((a, b) => (a.amount! <= b.amount! ? a : b))
-      : candidates[0]
+  const best = lowestPrice(service)
 
   return (
     <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -39,11 +31,4 @@ export function ServiceCard({ service }: { service: ServiceWithDetails }) {
       </div>
     </div>
   )
-}
-
-function defaultOption(service: ServiceWithDetails): string | null {
-  const opts = service.prices
-    .map((p) => p.pricing_option)
-    .filter((o): o is string => !!o)
-  return opts[0] ?? null
 }

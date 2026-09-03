@@ -194,3 +194,30 @@ function unitForPricingType(t: PricingType): string | null {
   if (t === 'daily') return 'per day'
   return null
 }
+
+/**
+ * The lowest concrete price for a service (optionally within a package),
+ * across all pricing options. Used for "from GH₵…" summaries in lists.
+ */
+export function lowestPrice(
+  service: ServiceWithDetails,
+  packageId: string | null = null,
+): ResolvedPrice {
+  const rows = service.prices.filter(
+    (p) =>
+      p.active &&
+      !p.requires_quote &&
+      p.amount !== null &&
+      (packageId ? (p.package_id ?? null) === packageId : true),
+  )
+  if (rows.length === 0) return resolvePrice(service, packageId, null)
+  const min = rows.reduce((a, b) =>
+    Number(a.amount) <= Number(b.amount) ? a : b,
+  )
+  return {
+    amount: Number(min.amount),
+    isQuote: false,
+    unit: min.unit,
+    priceId: min.id,
+  }
+}

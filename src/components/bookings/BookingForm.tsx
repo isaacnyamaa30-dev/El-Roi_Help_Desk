@@ -4,6 +4,7 @@ import { PriceDisplay } from '../services/PriceDisplay'
 import { LoadingSpinner } from '../common/LoadingSpinner'
 import {
   getCategoryCatalogue,
+  lowestPrice,
   resolvePrice,
 } from '../../services/catalogue'
 import {
@@ -224,10 +225,15 @@ export function BookingForm({
                     <p className="text-xs text-ink-soft">{s.description}</p>
                   )}
                 </div>
-                <PriceDisplay
-                  price={resolvePrice(s, s.packages[0]?.id ?? null, null)}
-                  size="sm"
-                />
+                <span className="flex items-center gap-1">
+                  {!lowestPrice(s, s.packages[0]?.id ?? null).isQuote && (
+                    <span className="text-xs text-ink-soft">from</span>
+                  )}
+                  <PriceDisplay
+                    price={lowestPrice(s, s.packages[0]?.id ?? null)}
+                    size="sm"
+                  />
+                </span>
               </button>
             ))}
           </div>
