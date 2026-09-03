@@ -34,7 +34,7 @@ export function AdminBookings({ unassignedOnly = false }: { unassignedOnly?: boo
             placeholder="Search number, client, phone…"
             value={filters.search ?? ''}
             onChange={(e) => set({ search: e.target.value })}
-            className={`${selectClass} min-w-[14rem] flex-1`}
+            className={`${selectClass} w-full flex-1 sm:w-auto sm:min-w-[12rem]`}
           />
           <select
             className={selectClass}

@@ -29,7 +29,7 @@ export function ClientPayments() {
         <LoadingSpinner label="Loading payments…" />
       ) : (
         <>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <MetricCard label="Total Billed" value={formatMoney(totalDue)} />
             <MetricCard label="Total Paid" value={formatMoney(totalPaid)} />
             <MetricCard
