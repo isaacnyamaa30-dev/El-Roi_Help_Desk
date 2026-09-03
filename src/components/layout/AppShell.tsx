@@ -14,23 +14,24 @@ import { useInstallPrompt } from '../../hooks/useInstallPrompt'
 import { useToast } from '../common/Toast'
 import { navForRole } from './navConfig'
 
-/** Compact "Install" button for the header — hidden when not installable. */
+/** Compact "Install" button for the header. */
 function HeaderInstall() {
-  const { canInstall, isIOS, promptInstall } = useInstallPrompt()
+  const { isInstalled, canInstall, manualHint, promptInstall } =
+    useInstallPrompt()
   const { notify } = useToast()
-  if (!canInstall && !isIOS) return null
+  if (isInstalled) return null
   return (
     <button
       title="Install EL-ROI Services"
       aria-label="Install app"
-      onClick={() =>
-        isIOS
-          ? notify(
-              'In Safari, tap Share, then "Add to Home Screen" to install the app.',
-              'info',
-            )
-          : promptInstall()
-      }
+      onClick={async () => {
+        if (canInstall) {
+          const r = await promptInstall()
+          if (r !== 'accepted') notify(manualHint, 'info')
+        } else {
+          notify(manualHint, 'info')
+        }
+      }}
       className="hidden items-center gap-1.5 rounded-md bg-gold px-2.5 py-1.5 text-xs font-semibold text-navy transition hover:bg-gold-light sm:flex"
     >
       <Download className="h-3.5 w-3.5" />
@@ -39,21 +40,22 @@ function HeaderInstall() {
   )
 }
 
-/** "Install app" entry in the sidebar — hidden unless the app can be installed. */
+/** "Install app" entry in the sidebar. */
 function SidebarInstall() {
-  const { canInstall, isIOS, promptInstall } = useInstallPrompt()
+  const { isInstalled, canInstall, manualHint, promptInstall } =
+    useInstallPrompt()
   const { notify } = useToast()
-  if (!canInstall && !isIOS) return null
+  if (isInstalled) return null
   return (
     <button
-      onClick={() =>
-        isIOS
-          ? notify(
-              'In Safari, tap Share, then "Add to Home Screen" to install the app.',
-              'info',
-            )
-          : promptInstall()
-      }
+      onClick={async () => {
+        if (canInstall) {
+          const r = await promptInstall()
+          if (r !== 'accepted') notify(manualHint, 'info')
+        } else {
+          notify(manualHint, 'info')
+        }
+      }}
       className="mb-1 block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gold hover:bg-navy-light"
     >
       ⬇ Install app

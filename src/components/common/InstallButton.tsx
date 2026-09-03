@@ -1,46 +1,60 @@
 import { useState } from 'react'
+import { Download } from 'lucide-react'
 import { useInstallPrompt } from '../../hooks/useInstallPrompt'
 
 /**
- * "Install app" call to action.
- *   - Chrome / Edge / Android: fires the native install prompt.
- *   - iOS Safari: shows the Share → Add to Home Screen hint.
- *   - Already installed / unsupported: renders nothing.
+ * "Install app" button. Always visible unless the app is already installed:
+ *   - if the browser offers a native prompt, it fires it;
+ *   - otherwise it shows the manual steps for the user's platform.
  */
 export function InstallButton({
   variant = 'solid',
 }: {
-  variant?: 'solid' | 'ghost'
+  variant?: 'solid' | 'ghost' | 'light'
 }) {
-  const { canInstall, isIOS, promptInstall } = useInstallPrompt()
-  const [showIOSHint, setShowIOSHint] = useState(false)
+  const { canInstall, isInstalled, manualHint, promptInstall } =
+    useInstallPrompt()
+  const [showHint, setShowHint] = useState(false)
 
-  if (!canInstall && !isIOS) return null
+  if (isInstalled) return null
 
   const cls =
     variant === 'ghost'
-      ? 'rounded-md border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10'
-      : 'rounded-md bg-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-dark'
+      ? 'border border-white/40 text-white hover:bg-white/10'
+      : variant === 'light'
+        ? 'border border-royal/30 text-royal hover:bg-royal/5'
+        : 'bg-green text-white hover:bg-green-dark'
 
-  if (isIOS) {
-    return (
-      <div className="relative">
-        <button className={cls} onClick={() => setShowIOSHint((v) => !v)}>
-          Install app
-        </button>
-        {showIOSHint && (
-          <p className="absolute left-1/2 z-10 mt-2 w-60 -translate-x-1/2 rounded-md bg-white p-3 text-xs text-ink shadow-lg">
-            In Safari, tap the <strong>Share</strong> icon, then{' '}
-            <strong>Add to Home Screen</strong>.
-          </p>
-        )}
-      </div>
-    )
+  async function handleClick() {
+    if (canInstall) {
+      const outcome = await promptInstall()
+      if (outcome !== 'accepted') setShowHint(true)
+      return
+    }
+    setShowHint((v) => !v)
   }
 
   return (
-    <button className={cls} onClick={promptInstall}>
-      Install app
-    </button>
+    <div className="relative">
+      <button
+        onClick={handleClick}
+        className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition ${cls}`}
+      >
+        <Download className="h-4 w-4" />
+        Install app
+      </button>
+      {showHint && (
+        <div className="absolute left-1/2 z-20 mt-2 w-64 -translate-x-1/2 rounded-md bg-white p-3 text-left text-xs text-ink shadow-xl ring-1 ring-black/5">
+          <p className="font-semibold text-navy">How to install</p>
+          <p className="mt-1">{manualHint}</p>
+          <button
+            onClick={() => setShowHint(false)}
+            className="mt-2 text-royal"
+          >
+            Got it
+          </button>
+        </div>
+      )}
+    </div>
   )
 }

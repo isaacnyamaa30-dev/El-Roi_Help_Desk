@@ -1,5 +1,6 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { InstallButton } from '../../components/common/InstallButton'
 import { ShareButton } from '../../components/common/ShareButton'
 import { homeForRole } from '../../components/layout/navConfig'
 import {
@@ -52,10 +53,12 @@ export function Home() {
               View Services
             </Link>
             <ShareButton variant="ghost" />
+            <InstallButton variant="ghost" />
           </div>
           <p className="mt-3 text-xs text-blue-100/60">
-            Open it in your browser — no download needed — or install it on
-            your phone or laptop.
+            Use it in your browser — nothing to download — or tap{' '}
+            <strong className="text-blue-100/90">Install app</strong> to add it
+            to your phone or laptop.
           </p>
         </div>
       </section>
